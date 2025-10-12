@@ -38,7 +38,7 @@ export function useCurrencyFormatter(initialValue = null) {
     amount,
     formattedAmount,
     updateAmount,
-    setAmount, // Expose the new function
-    reset,     // Expose the new function
+    setAmount,
+    reset,
   };
 }

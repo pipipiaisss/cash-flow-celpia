@@ -15,8 +15,8 @@
       <div class="form-group">
         <label>Type</label>
         <select v-model="newTransaction.type" :disabled="isSubmitting">
-          <option value="cash-out">Cash Out</option>
           <option value="cash-in">Cash In</option>
+          <option value="cash-out">Cash Out</option>
         </select>
       </div>
       <div class="form-group">
@@ -83,7 +83,7 @@ const newTransaction = ref({
   plannedDate: '',
   realizationDate: '',
   name: '',
-  type: 'cash-out',
+  type: 'cash-in',
   description: '',
   confirmed: false,
 });
@@ -127,7 +127,7 @@ const resetForm = () => {
     plannedDate: '',
     realizationDate: '',
     name: '',
-    type: 'cash-out',
+    type: 'cash-in',
     description: '',
     confirmed: false,
   };

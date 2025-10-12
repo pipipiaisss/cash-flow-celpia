@@ -9,8 +9,8 @@
       <div class="form-group">
         <label for="type">Type:</label>
         <select id="type" v-model="form.type" required>
-          <option value="cash-out">Cash Out</option>
           <option value="cash-in">Cash In</option>
+          <option value="cash-out">Cash Out</option>
         </select>
       </div>
       <div class="form-group">
@@ -31,7 +31,7 @@ import { ref } from 'vue';
 
 const form = ref({
   name: '',
-  type: 'cash-out',
+  type: 'cash-in',
   plannedAmount: 0,
   plannedDate: ''
 });
@@ -43,7 +43,7 @@ const handleSubmit = () => {
   // Reset form
   form.value = {
     name: '',
-    type: 'cash-out',
+    type: 'cash-in',
     plannedAmount: 0,
     plannedDate: ''
   };
