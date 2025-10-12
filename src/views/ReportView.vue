@@ -1,8 +1,8 @@
 <script setup>
-import { computed } from 'vue';
+import { ref, computed } from 'vue';
 import TransactionList from '../components/TransactionList.vue';
 import FilterControls from '../components/FilterControls.vue';
-import { useApi } from '../composables/useApi'; // Import useApi
+import { useApi } from '../composables/useApi';
 
 const props = defineProps({
   transactions: Array,
@@ -10,7 +10,7 @@ const props = defineProps({
   selectedMonth: Number,
   selectedYear: Number,
   filterDateType: String,
-  isLoading: Boolean // Receive isLoading prop
+  isLoading: Boolean
 });
 
 const emit = defineEmits([
@@ -19,30 +19,43 @@ const emit = defineEmits([
   'update:filterDateType'
 ]);
 
-// Get the delete function from our composable
 const { deleteTransaction } = useApi();
+
+// --- State untuk Filter Jenis Transaksi ---
+const transactionTypeFilter = ref('all'); // 'all', 'cash-in', 'cash-out'
+
+const setTransactionTypeFilter = (type) => {
+  transactionTypeFilter.value = type;
+};
+
+// --- Computed Property untuk memfilter transaksi lebih lanjut ---
+const displayTransactions = computed(() => {
+  if (transactionTypeFilter.value === 'all') {
+    return props.filteredTransactions;
+  }
+  return props.filteredTransactions.filter(t => t.type === transactionTypeFilter.value);
+});
 
 const handleDeleteTransaction = async (id) => {
   const confirmed = window.confirm("Are you sure you want to delete this transaction? This action cannot be undone.");
   if (confirmed) {
     try {
       await deleteTransaction(id);
-      // The UI will update automatically because the transactions array in useApi is reactive
     } catch (error) {
-      // Optionally, show an error message to the user
       alert("Failed to delete the transaction. Please try again.");
     }
   }
 };
 
+// --- Computed Properties untuk Ringkasan, sekarang berdasarkan displayTransactions ---
 const totalIncome = computed(() => {
-  return props.filteredTransactions
+  return displayTransactions.value
     .filter(t => t.type === 'cash-in' && t.realizationAmount)
     .reduce((sum, t) => sum + t.realizationAmount, 0);
 });
 
 const totalOutcome = computed(() => {
-  return props.filteredTransactions
+  return displayTransactions.value
     .filter(t => t.type === 'cash-out' && t.realizationAmount)
     .reduce((sum, t) => sum + t.realizationAmount, 0);
 });
@@ -79,8 +92,14 @@ const formatCurrency = (value) => {
       @update:year="emit('update:year', $event)"
       @update:filterDateType="emit('update:filterDateType', $event)"
     />
+    <!-- Tombol Filter Jenis Transaksi -->
+    <div class="transaction-type-filter">
+      <button @click="setTransactionTypeFilter('all')" :class="{ active: transactionTypeFilter === 'all' }">Semua</button>
+      <button @click="setTransactionTypeFilter('cash-in')" :class="{ active: transactionTypeFilter === 'cash-in' }">Pemasukan</button>
+      <button @click="setTransactionTypeFilter('cash-out')" :class="{ active: transactionTypeFilter === 'cash-out' }">Pengeluaran</button>
+    </div>
     <TransactionList 
-        :transactions="filteredTransactions" 
+        :transactions="displayTransactions" 
         :is-loading="isLoading" 
         @delete-transaction="handleDeleteTransaction" 
     />
@@ -129,14 +148,42 @@ const formatCurrency = (value) => {
 }
 
 .card.income p {
-  color: #10b981; /* Accent color for income */
+  color: #10b981;
 }
 
 .card.outcome p {
-  color: #ef4444; /* A contrasting red for outcome */
+  color: #ef4444;
 }
 
 .card.net-flow p {
   color: var(--primary-color);
+}
+
+/* Styling untuk Tombol Filter */
+.transaction-type-filter {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.transaction-type-filter button {
+  padding: 8px 16px;
+  border: 1px solid #d1d5db; /* gray-300 */
+  background-color: #fff;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+  font-weight: 500;
+}
+
+.transaction-type-filter button:hover {
+  background-color: #f3f4f6; /* gray-100 */
+}
+
+.transaction-type-filter button.active {
+  background-color: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
 }
 </style>

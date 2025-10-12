@@ -36,3 +36,17 @@ This document outlines the architecture, features, and development plans for the
 ### 4.4. Adjust Pagination Trigger
 *   **Status:** **COMPLETED**
 *   **Summary:** Set pagination to 5 items per page.
+
+## 5. Current Task: Add Transaction Type Filter
+
+*   **Status:** **IN PROGRESS**
+*   **Goal:** Allow users to filter the transaction list on the Report page.
+
+### 5.1. Plan
+
+1.  **Update `Report.vue`:**
+    *   Add state to manage the currently selected filter ('all', 'cash-in', 'cash-out').
+    *   Add filter buttons to the template.
+    *   Create a `computed` property to filter the transaction list based on the selected filter.
+    *   Update the transaction list rendering to use the new filtered list.
+2.  **Commit & Push:** Save the changes to the repository.
