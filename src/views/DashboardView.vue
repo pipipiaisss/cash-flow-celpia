@@ -182,8 +182,8 @@ onMounted(fetchTransactions);
 }
 
 #year-filter option {
-  background: #2a2a4a;
-  color: #e0e0e0;
+  background: var(--background-dark);
+  color: var(--text-color-light);
 }
 
 .summary-grid {

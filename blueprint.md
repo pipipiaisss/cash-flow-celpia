@@ -50,12 +50,15 @@ This document outlines the architecture, features, and development plans for the
 
 ### 4.9. Fix Input Data Page Styling and Logic
 *   **Status:** **COMPLETED**
-*   **Goal:** To correctly apply the dark theme to the Input Data page and restore the form's broken logic.
-*   **Changes:**
-    *   **Styled `CashFlowForm.vue`:** Correctly applied the dark-theme glassmorphism styling to the form component.
-    *   **Restored Form Logic:** Re-implemented the script in `CashFlowForm.vue` to restore the critical functionality that synchronizes the `plannedAmount`/`realizationAmount` and `plannedDate`/`realizationDate` fields, and automatically checks the "Confirmed" box when all fields are filled.
-    *   **Corrected Wrapper View:** Removed interfering styles from the `InputDataView.vue` wrapper.
-    *   **Aligned Input Fields:** Added `box-sizing: border-box;` to the form input styles to ensure all fields, including the `select` dropdown, have a consistent width.
 
-## 5. Current Task
-*   No active task. Awaiting user feedback.
+### 4.10. Make All Pages Responsive
+*   **Status:** **COMPLETED**
+
+### 4.11. Improve Dropdown Readability
+*   **Status:** **COMPLETED**
+*   **Goal:** To improve the readability of dropdown options across the application.
+*   **Changes:**
+    *   **Consistent Styling:** Applied a consistent dark theme to dropdown options in `DashboardView.vue`, `FilterControls.vue`, and `CashFlowForm.vue`, ensuring the background and text colors are legible and align with the application's overall design.
+
+## 5. Next Steps
+*   Awaiting user feedback.

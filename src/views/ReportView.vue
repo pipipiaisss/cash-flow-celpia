@@ -123,19 +123,20 @@ onMounted(async () => {
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 2rem;
+  box-sizing: border-box;
 }
 
 .summary-cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 20px;
-  margin-bottom: 30px;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
 }
 
 .card {
   background-color: rgba(255, 255, 255, 0.05);
-  padding: 25px;
+  padding: 1.5rem;
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(10px);
@@ -144,7 +145,7 @@ onMounted(async () => {
 
 .card h3 {
   margin: 0 0 10px 0;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   font-weight: 500;
   color: var(--text-color-light);
 }
@@ -163,7 +164,8 @@ onMounted(async () => {
   display: flex;
   justify-content: center;
   gap: 10px;
-  margin-bottom: 20px;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
 }
 
 .transaction-type-filter button {
@@ -185,5 +187,39 @@ onMounted(async () => {
   background-color: var(--primary-color);
   color: var(--background-dark);
   border-color: var(--primary-color);
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .report-container {
+    padding: 1rem;
+  }
+
+  .summary-cards {
+    gap: 1rem;
+  }
+
+  .card {
+    padding: 1rem;
+  }
+
+  .card h3 {
+    font-size: 1rem;
+  }
+
+  .card p {
+    font-size: 1.6rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .card p {
+    font-size: 1.4rem;
+  }
+
+  .transaction-type-filter button {
+    font-size: 0.8rem;
+    padding: 6px 12px;
+  }
 }
 </style>

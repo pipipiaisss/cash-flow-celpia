@@ -107,6 +107,11 @@ const getMonthName = (monthNumber) => {
   font-size: 1rem;
 }
 
+.control-group select option {
+  background: var(--background-dark);
+  color: var(--text-color-light);
+}
+
 .radio-group {
   display: flex;
   gap: 10px;

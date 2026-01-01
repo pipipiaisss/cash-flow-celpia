@@ -1,16 +1,25 @@
 <script setup>
-import { computed } from 'vue';
+import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuth } from './composables/useAuth';
 
 const router = useRouter();
 const { isAuthenticated, logout } = useAuth();
+const isMenuOpen = ref(false);
+
+const toggleMenu = () => {
+  isMenuOpen.value = !isMenuOpen.value;
+};
+
+const closeMenu = () => {
+  isMenuOpen.value = false;
+};
 
 const handleLogout = () => {
   logout();
+  closeMenu();
   router.push('/login');
 };
-
 </script>
 
 <template>
@@ -18,10 +27,13 @@ const handleLogout = () => {
     <header class="app-header" v-if="isAuthenticated">
       <div class="header-container">
         <h1 class="title">Cash Flow</h1>
-        <nav>
-          <router-link to="/dashboard" class="nav-button">Dashboard</router-link>
-          <router-link to="/report" class="nav-button">Report</router-link>
-          <router-link to="/input" class="nav-button">Input Data</router-link>
+        <button @click="toggleMenu" class="menu-toggle">
+          <i :class="isMenuOpen ? 'fas fa-times' : 'fas fa-bars'"></i>
+        </button>
+        <nav :class="{ 'nav-open': isMenuOpen }">
+          <router-link to="/dashboard" @click="closeMenu" class="nav-button">Dashboard</router-link>
+          <router-link to="/report" @click="closeMenu" class="nav-button">Report</router-link>
+          <router-link to="/input" @click="closeMenu" class="nav-button">Input Data</router-link>
           <button @click="handleLogout" class="nav-button logout-button">Logout</button>
         </nav>
       </div>
@@ -66,7 +78,7 @@ body {
 
 /* Header Styles */
 .app-header {
-  background-color: transparent; /* Make header transparent */
+  background-color: transparent;
   padding: 20px 40px;
   width: 100%;
   z-index: 1000;
@@ -116,15 +128,15 @@ nav {
 }
 
 .logout-button {
-    background-color: transparent;
-    border: 1px solid var(--secondary-color);
-    color: var(--secondary-color);
+  background-color: transparent;
+  border: 1px solid var(--secondary-color);
+  color: var(--secondary-color);
 }
 
 .logout-button:hover {
-    background-color: var(--secondary-color);
-    color: var(--white-color);
-    box-shadow: 0 0 15px rgba(255, 121, 198, 0.5);
+  background-color: var(--secondary-color);
+  color: var(--white-color);
+  box-shadow: 0 0 15px rgba(255, 121, 198, 0.5);
 }
 
 main {
@@ -133,14 +145,30 @@ main {
   box-sizing: border-box;
 }
 
+.menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    z-index: 1001;
+}
+
 /* Mobile adjustments */
 @media (max-width: 768px) {
   .app-header {
     padding: 20px;
+    position: relative;
   }
+
   .header-container {
-    flex-direction: column;
-    gap: 20px;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .menu-toggle {
+      display: block;
   }
 
   .title {
@@ -148,14 +176,40 @@ main {
   }
 
   nav {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    left: 0;
     width: 100%;
-    justify-content: space-around;
+    background: var(--background-light);
+    transform: translateY(-150%);
+    transition: transform 0.3s ease-in-out;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    gap: 5px;
   }
-  
+
+  nav.nav-open {
+      transform: translateY(0);
+  }
+
   .nav-button {
-    padding: 8px 12px;
-    font-size: 0.9rem;
+    padding: 15px 20px;
+    font-size: 1rem;
+    border-radius: 0;
+    width: 100%;
+    text-align: center;
+  }
+
+  .nav-button:hover {
+      transform: none;
+      box-shadow: none;
+  }
+
+  .logout-button {
+      margin: 10px 20px 0;
+      width: auto;
   }
 }
-
 </style>

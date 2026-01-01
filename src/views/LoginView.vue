@@ -145,9 +145,11 @@ const handleLogin = () => {
   transform: translateY(-50%);
   color: rgba(255, 255, 255, 0.6);
   transition: color 0.3s;
+  z-index: 1;
 }
 
 .input-group input {
+  box-sizing: border-box;
   width: 100%;
   padding: 15px 15px 15px 45px;
   background: rgba(0, 0, 0, 0.2);
@@ -169,7 +171,7 @@ const handleLogin = () => {
   box-shadow: 0 0 15px rgba(102, 126, 234, 0.5);
 }
 
-.input-group input:focus + i {
+.input-group input:focus ~ i {
   color: #fff;
 }
 

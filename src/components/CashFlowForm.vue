@@ -219,6 +219,11 @@ textarea {
   transition: all 0.2s ease;
 }
 
+select option {
+  background: var(--background-dark);
+  color: var(--text-color-light);
+}
+
 input::placeholder, textarea::placeholder {
     color: rgba(224, 224, 224, 0.5);
 }

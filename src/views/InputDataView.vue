@@ -54,6 +54,13 @@ const handleTransactionSubmit = async (transactionData) => {
   width: 100%;
   max-width: 800px;
   margin: 2rem auto;
-  padding: 0 20px;
+  padding: 0 1rem; /* Adjusted for mobile */
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .input-view-container {
+    margin: 1rem auto;
+  }
 }
 </style>
