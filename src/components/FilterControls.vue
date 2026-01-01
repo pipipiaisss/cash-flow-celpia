@@ -17,11 +17,11 @@
       <div class="radio-group">
         <label>
           <input type="radio" :checked="filterDateType === 'plannedDate'" value="plannedDate" @change="emit('update:filterDateType', $event.target.value)">
-          Planned Date
+          <span>Planned Date</span>
         </label>
         <label>
           <input type="radio" :checked="filterDateType === 'realizationDate'" value="realizationDate" @change="emit('update:filterDateType', $event.target.value)">
-          Realization Date
+          <span>Realization Date</span>
         </label>
       </div>
     </div>
@@ -53,19 +53,17 @@ const availableYears = computed(() => {
     return [currentYear];
   }
 
-  // Find the earliest year from transactions
   const firstYear = props.transactions.reduce((minYear, t) => {
     const transactionYear = new Date(t.realizationDate || t.plannedDate).getFullYear();
     return transactionYear < minYear ? transactionYear : minYear;
   }, currentYear);
 
-  // Generate a continuous array of years from the first transaction year to the current year
   const years = [];
   for (let year = currentYear; year >= firstYear; year--) {
     years.push(year);
   }
 
-  return years; // Already in descending order
+  return years;
 });
 
 const getMonthName = (monthNumber) => {
@@ -81,10 +79,12 @@ const getMonthName = (monthNumber) => {
   flex-wrap: wrap;
   gap: 20px;
   padding: 20px;
-  background-color: var(--white-color);
+  background-color: rgba(255, 255, 255, 0.05);
   border-radius: 12px;
   margin-bottom: 30px;
   align-items: flex-end;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
 }
 
 .control-group {
@@ -95,39 +95,45 @@ const getMonthName = (monthNumber) => {
 .control-group label {
   margin-bottom: 8px;
   font-weight: 500;
-  color: #374151;
+  color: var(--text-color-light);
 }
 
 .control-group select {
   padding: 10px;
   border-radius: 6px;
-  border: 1px solid #d1d5db;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background-color: rgba(0, 0, 0, 0.2);
+  color: var(--text-color-light);
   font-size: 1rem;
 }
 
 .radio-group {
   display: flex;
-  gap: 15px;
-  background-color: #f3f4f6;
+  gap: 10px;
+  background-color: rgba(0, 0, 0, 0.2);
   padding: 5px;
   border-radius: 8px;
 }
 
 .radio-group label {
   margin: 0;
-  padding: 8px 12px;
   cursor: pointer;
-  border-radius: 6px;
-  transition: background-color 0.3s, color 0.3s;
+}
+
+.radio-group span {
+    padding: 8px 12px;
+    border-radius: 6px;
+    transition: background-color 0.3s, color 0.3s;
+    display: block;
 }
 
 .radio-group input {
   display: none;
 }
 
-.radio-group input:checked + label {
+.radio-group input:checked + span {
   background-color: var(--primary-color);
-  color: var(--white-color);
+  color: var(--background-dark);
   font-weight: 500;
 }
 </style>

@@ -72,7 +72,7 @@ const emitDelete = (id) => {
 }
 
 const currentPage = ref(1);
-const itemsPerPage = 5; // Changed from 10 to 5
+const itemsPerPage = 5;
 
 const totalPages = computed(() => {
   return Math.ceil(props.transactions.length / itemsPerPage);
@@ -112,9 +112,9 @@ const calculateRemaining = (transaction) => {
   const realization = transaction.realizationAmount || 0;
   const planned = transaction.plannedAmount || 0;
   if (transaction.type === 'cash-in') {
-    return realization - planned; // More is better
-  } else { // cash-out
-    return planned - realization; // Less is better
+    return realization - planned;
+  } else { 
+    return planned - realization;
   }
 };
 
@@ -128,31 +128,34 @@ const getRemainingClass = (transaction) => {
 
 <style scoped>
 .transaction-list-container {
-  background-color: var(--white-color);
+  background-color: rgba(255, 255, 255, 0.05);
   padding: 25px;
   border-radius: 12px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 h3 {
   margin-top: 0;
   margin-bottom: 20px;
-  color: var(--primary-color);
+  color: var(--white-color);
+  font-weight: 600;
 }
 
 .transaction-list {
   list-style: none;
   padding: 0;
   margin: 0;
-  min-height: 300px; /* Ensures consistent height even with few items */
+  min-height: 300px;
 }
 
 .transaction-item {
   display: flex;
   justify-content: space-between;
-  align-items: center; /* Vertically align content and button */
+  align-items: center;
   padding: 15px 0;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .transaction-content {
@@ -172,13 +175,13 @@ h3 {
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #9ca3af; /* gray-400 */
+    color: var(--text-color-light);
     transition: all 0.2s ease-in-out;
 }
 
 .delete-btn:hover {
-    background-color: #fee2e2; /* red-100 */
-    color: #ef4444; /* red-500 */
+    background-color: rgba(255, 121, 198, 0.2);
+    color: #ff79c6;
 }
 
 .delete-btn:disabled {
@@ -204,12 +207,12 @@ h3 {
 .name {
   font-weight: 600;
   font-size: 1.1rem;
-  color: #1f2937;
+  color: var(--white-color);
 }
 
 .description {
   font-size: 0.9rem;
-  color: #6b7280;
+  color: var(--text-color-light);
   margin-top: 2px;
 }
 
@@ -227,11 +230,11 @@ h3 {
 }
 
 .amount.income {
-  color: var(--accent-color);
+  color: #31e89f;
 }
 
 .amount.outcome {
-  color: #ef4444;
+  color: #ff79c6;
 }
 
 .remaining {
@@ -241,24 +244,24 @@ h3 {
 }
 
 .remaining.surplus {
-  color: #22c55e; /* green-500 */
+  color: #31e89f;
 }
 
 .remaining.deficit {
-  color: #ef4444; /* red-500 */
+  color: #ff79c6;
 }
 
 .remaining.neutral {
-  color: #6b7280; /* gray-500 */
+  color: var(--text-color-light);
 }
 
 .sub-info {
   margin-top: 8px;
   font-size: 0.9rem;
-  color: #4b5563;
+  color: var(--text-color-light);
   display: flex;
   justify-content: space-between;
-  border-top: 1px solid #f3f4f6;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
   padding-top: 8px;
   flex-wrap: wrap;
 }
@@ -272,7 +275,7 @@ h3 {
 .info-group .label {
   font-weight: 500;
   font-size: 0.85rem;
-  color: #6b7280;
+  color: var(--text-color-light);
 }
 
 .info-group .value {
@@ -280,12 +283,12 @@ h3 {
 }
 
 .info-group .separator {
-  color: #d1d5db;
+  color: rgba(255, 255, 255, 0.2);
 }
 
 .no-transactions {
   text-align: center;
   padding: 40px;
-  color: #6b7280;
+  color: var(--text-color-light);
 }
 </style>

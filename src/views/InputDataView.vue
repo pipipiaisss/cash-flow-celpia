@@ -1,5 +1,5 @@
 <template>
-  <div class="input-container">
+  <div class="input-view-container">
     <CashFlowForm 
       @add-transaction="handleTransactionSubmit" 
       :is-submitting="isSubmitting"
@@ -16,7 +16,7 @@ import { useApi } from '../composables/useApi';
 import { useTransactions } from '../composables/useTransactions';
 
 const { addTransaction } = useApi();
-const { fetchTransactions } = useTransactions(); // Get the fetch function
+const { fetchTransactions } = useTransactions();
 
 const isSubmitting = ref(false);
 const submitError = ref(null);
@@ -30,7 +30,7 @@ const handleTransactionSubmit = async (transactionData) => {
   try {
     await addTransaction(transactionData);
     submitSuccess.value = true;
-    await fetchTransactions(); // Refresh the global transaction list
+    await fetchTransactions();
     
     setTimeout(() => {
       submitSuccess.value = false;
@@ -50,12 +50,10 @@ const handleTransactionSubmit = async (transactionData) => {
 </script>
 
 <style scoped>
-.input-container {
+.input-view-container {
+  width: 100%;
   max-width: 800px;
-  margin: 0 auto;
-  padding: 2rem;
-  background-color: var(--white-color);
-  border-radius: 12px;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  margin: 2rem auto;
+  padding: 0 20px;
 }
 </style>

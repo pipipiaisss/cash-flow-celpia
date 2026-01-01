@@ -10,17 +10,17 @@ This document outlines the architecture, features, and development plans for the
 *   **Backend Integration:** Connects to `https://cash-flow-rouge.vercel.app/cashflows` for all CRUD operations.
 *   **Dashboard View:** Visualizes monthly cash flow summaries with a bar chart, filterable by year.
 *   **Report View:** Displays paginated transaction lists with filtering capabilities.
-*   **Data Input View:** Provides a form for adding new transactions.
+*   **Data Input View:** Provides a form for adding new transactions with automated logic.
 *   **Currency Formatting:** All monetary values are in Indonesian Rupiah (IDR).
 *   **Dynamic Year Filters:** The year-based filters in both the Dashboard and Report views now dynamically populate a continuous range of years, from the earliest transaction year up to the current year.
 
-
 ## 3. Design & Styling
 
-*   **Theme:** Modern and professional with a clean layout.
-*   **Color Palette:** Green for income, red for outcome, with neutral grays.
-*   **Typography:** "Poppins" font.
-*   **Interactivity:** Smooth transitions and clear user feedback.
+*   **Theme:** A cohesive, modern, and professional dark theme is applied globally.
+*   **Color Palette:** A sophisticated palette featuring a deep blue-purple gradient (`#1a1a2e` to `#2a2a4a`), bright cyan (`#00f2fe`) and pink (`#ff79c6`) accents, and light text (`#e0e0e0`).
+*   **Typography:** "Poppins" font is used throughout the application.
+*   **Interactivity:** Smooth transitions, glowing effects, and clear user feedback are implemented across interactive elements.
+*   **Glassmorphism:** Key UI components utilize a semi-transparent, blurred-glass effect for a modern aesthetic.
 
 ## 4. Completed Tasks
 
@@ -39,24 +39,23 @@ This document outlines the architecture, features, and development plans for the
 ### 4.5. Unify Year Filters
 *   **Status:** **COMPLETED**
 
-## 5. Current Task: Implement Login Page
+### 4.6. Implement Login Page
+*   **Status:** **COMPLETED**
 
-*   **Status:** **IN PROGRESS**
-*   **Goal:** Create a secure, professional-looking login page to gate access to the application.
+### 4.7. Login Page Redesign
+*   **Status:** **COMPLETED**
 
-### 5.1. Plan
+### 4.8. Dashboard Redesign
+*   **Status:** **COMPLETED**
 
-1.  **Create `LoginView.vue`:**
-    *   Design a visually appealing and user-friendly login form.
-    *   Implement logic to handle user input for username and password.
-    *   Validate credentials against the specified username (`cafein`) and password (`pass1234`).
-    *   Provide clear visual feedback for successful or failed login attempts.
-2.  **Create `useAuth.js` Composable:**
-    *   Develop a state management solution to track the user's authentication status (logged in or out).
-    *   Expose functions like `login()` and `logout()` to be used across the application.
-3.  **Update `router/index.js`:**
-    *   Add a new route for the `/login` path.
-    *   Implement a navigation guard (`beforeEach`) to check for authentication on protected routes.
-    *   Redirect unauthenticated users to the `/login` page.
-4.  **Modify `App.vue`:**
-    *   Conditionally render the `NavBar` component only when the user is authenticated.
+### 4.9. Fix Input Data Page Styling and Logic
+*   **Status:** **COMPLETED**
+*   **Goal:** To correctly apply the dark theme to the Input Data page and restore the form's broken logic.
+*   **Changes:**
+    *   **Styled `CashFlowForm.vue`:** Correctly applied the dark-theme glassmorphism styling to the form component.
+    *   **Restored Form Logic:** Re-implemented the script in `CashFlowForm.vue` to restore the critical functionality that synchronizes the `plannedAmount`/`realizationAmount` and `plannedDate`/`realizationDate` fields, and automatically checks the "Confirmed" box when all fields are filled.
+    *   **Corrected Wrapper View:** Removed interfering styles from the `InputDataView.vue` wrapper.
+    *   **Aligned Input Fields:** Added `box-sizing: border-box;` to the form input styles to ensure all fields, including the `select` dropdown, have a consistent width.
+
+## 5. Current Task
+*   No active task. Awaiting user feedback.

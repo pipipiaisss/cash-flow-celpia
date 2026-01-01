@@ -5,26 +5,21 @@ import FilterControls from '../components/FilterControls.vue';
 import { useTransactions } from '../composables/useTransactions';
 import { useApi } from '../composables/useApi';
 
-// --- Menggunakan composable ---
 const { transactions, fetchTransactions } = useTransactions();
 const { deleteTransaction } = useApi();
 
-// --- State Lokal untuk filter ---
 const today = new Date();
 const selectedMonth = ref(today.getMonth() + 1);
 const selectedYear = ref(today.getFullYear());
 const filterDateType = ref('realizationDate');
-const transactionTypeFilter = ref('all'); // 'all', 'cash-in', 'cash-out'
+const transactionTypeFilter = ref('all');
 const isLoading = ref(true);
 
-// --- Fungsi untuk memperbarui filter ---
 const setTransactionTypeFilter = (type) => {
   transactionTypeFilter.value = type;
 };
 
-// --- Computed property untuk memfilter transaksi berdasarkan tanggal ---
 const filteredByDate = computed(() => {
-  // Pastikan transaksi diurutkan berdasarkan tanggal, yang terbaru lebih dulu
   const sorted = transactions.value.slice().sort((a, b) => {
     const dateA = new Date(a.realizationDate || a.plannedDate);
     const dateB = new Date(b.realizationDate || b.plannedDate);
@@ -40,7 +35,6 @@ const filteredByDate = computed(() => {
   });
 });
 
-// --- Computed property untuk memfilter lebih lanjut berdasarkan jenis (cash-in/cash-out) ---
 const displayTransactions = computed(() => {
   if (transactionTypeFilter.value === 'all') {
     return filteredByDate.value;
@@ -53,14 +47,13 @@ const handleDeleteTransaction = async (id) => {
   if (confirmed) {
     try {
       await deleteTransaction(id);
-      await fetchTransactions(); // Muat ulang data setelah penghapusan
+      await fetchTransactions();
     } catch (error) {
       alert("Failed to delete the transaction. Please try again.");
     }
   }
 };
 
-// --- Computed Properties untuk Ringkasan ---
 const totalIncome = computed(() => {
   return displayTransactions.value
     .filter(t => t.type === 'cash-in' && t.realizationAmount)
@@ -79,7 +72,6 @@ const formatCurrency = (value) => {
   return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(value);
 };
 
-// --- Muat data saat komponen di-mount ---
 onMounted(async () => {
   isLoading.value = true;
   await fetchTransactions();
@@ -142,17 +134,19 @@ onMounted(async () => {
 }
 
 .card {
-  background-color: var(--white-color);
+  background-color: rgba(255, 255, 255, 0.05);
   padding: 25px;
   border-radius: 12px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .card h3 {
   margin: 0 0 10px 0;
   font-size: 1.2rem;
   font-weight: 500;
-  color: #6b7280;
+  color: var(--text-color-light);
 }
 
 .card p {
@@ -161,8 +155,8 @@ onMounted(async () => {
   font-weight: 700;
 }
 
-.card.income p { color: #10b981; }
-.card.outcome p { color: #ef4444; }
+.card.income p { color: #31e89f; }
+.card.outcome p { color: #ff79c6; }
 .card.net-flow p { color: var(--primary-color); }
 
 .transaction-type-filter {
@@ -174,19 +168,22 @@ onMounted(async () => {
 
 .transaction-type-filter button {
   padding: 8px 16px;
-  border: 1px solid #d1d5db;
-  background-color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background-color: transparent;
+  color: var(--text-color-light);
   border-radius: 6px;
   cursor: pointer;
   transition: background-color 0.2s, color 0.2s;
   font-weight: 500;
 }
 
-.transaction-type-filter button:hover { background-color: #f3f4f6; }
+.transaction-type-filter button:hover { 
+  background-color: rgba(255, 255, 255, 0.1); 
+}
 
 .transaction-type-filter button.active {
   background-color: var(--primary-color);
-  color: white;
+  color: var(--background-dark);
   border-color: var(--primary-color);
 }
 </style>

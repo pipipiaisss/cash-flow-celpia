@@ -26,7 +26,7 @@ const handleLogout = () => {
         </nav>
       </div>
     </header>
-    <main :class="{ 'main-full': !isAuthenticated }">
+    <main>
       <router-view />
     </main>
   </div>
@@ -35,18 +35,20 @@ const handleLogout = () => {
 <style>
 /* Global Styles */
 :root {
-  --primary-color: #007bff;
-  --primary-dark-color: #0056b3;
-  --background-color: #f5f7fa;
-  --text-color: #333;
+  --primary-color: #00f2fe; /* Bright cyan for accents */
+  --secondary-color: #ff79c6; /* Pink for other accents */
+  --background-dark: #1a1a2e;
+  --background-light: #2a2a4a;
+  --text-color-light: #e0e0e0;
   --white-color: #ffffff;
 }
 
 body {
   margin: 0;
   font-family: 'Poppins', sans-serif;
-  background-color: var(--background-color);
-  color: var(--text-color);
+  background: linear-gradient(135deg, var(--background-dark) 0%, var(--background-light) 100%);
+  color: var(--text-color-light);
+  min-height: 100vh;
 }
 
 #app {
@@ -57,25 +59,26 @@ body {
 
 .title {
   font-size: 2.5rem;
-  color: var(--primary-color);
+  color: var(--white-color);
   font-weight: 700;
+  text-shadow: 0 0 10px rgba(0, 242, 254, 0.5);
 }
 
 /* Header Styles */
 .app-header {
-  background-color: var(--white-color);
+  background-color: transparent; /* Make header transparent */
   padding: 20px 40px;
   width: 100%;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
   z-index: 1000;
   box-sizing: border-box;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .header-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  max-width: 1400px;
+  width: 100%;
   margin: 0 auto;
 }
 
@@ -89,8 +92,8 @@ nav {
   padding: 10px 20px;
   border: 1px solid transparent;
   border-radius: 8px;
-  background-color: var(--primary-color);
-  color: var(--white-color);
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--text-color-light);
   font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
@@ -99,87 +102,42 @@ nav {
 }
 
 .nav-button:hover {
-  background-color: var(--primary-dark-color);
+  background-color: rgba(255, 255, 255, 0.2);
+  color: var(--white-color);
   transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 .nav-button.router-link-exact-active {
-  background-color: var(--white-color);
-  color: var(--primary-color);
-  border-color: var(--primary-color);
-  font-weight: 600;
+  background-color: var(--primary-color);
+  color: var(--background-dark);
+  font-weight: 700;
+  box-shadow: 0 0 15px rgba(0, 242, 254, 0.5);
 }
 
 .logout-button {
     background-color: transparent;
-    color: var(--primary-color);
-    border: 1px solid var(--primary-color);
+    border: 1px solid var(--secondary-color);
+    color: var(--secondary-color);
 }
 
 .logout-button:hover {
-    background-color: var(--primary-color);
+    background-color: var(--secondary-color);
     color: var(--white-color);
+    box-shadow: 0 0 15px rgba(255, 121, 198, 0.5);
 }
 
 main {
   flex-grow: 1;
-  padding: 40px;
   width: 100%;
-  max-width: 1400px;
-  margin: 0 auto;
   box-sizing: border-box;
-}
-
-main.main-full {
-    max-width: 100%;
-    padding: 0;
-}
-
-/* Input and Button base styles */
-input[type="text"],
-input[type="password"],
-input[type="date"],
-select,
-textarea {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-sizing: border-box;
-    transition: border-color 0.3s;
-}
-
-input[type="text"]:focus,
-input[type="password"]:focus,
-input[type="date"]:focus,
-select:focus,
-textarea:focus {
-    outline: none;
-    border-color: var(--primary-color);
-}
-
-button {
-    padding: 12px 24px;
-    border: none;
-    border-radius: 8px;
-    background-color: var(--primary-color);
-    color: var(--white-color);
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-
-button:hover {
-    background-color: var(--primary-dark-color);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
 }
 
 /* Mobile adjustments */
 @media (max-width: 768px) {
+  .app-header {
+    padding: 20px;
+  }
   .header-container {
     flex-direction: column;
     gap: 20px;
@@ -194,8 +152,10 @@ button:hover {
     justify-content: space-around;
   }
   
-  main {
-    padding: 20px;
+  .nav-button {
+    padding: 8px 12px;
+    font-size: 0.9rem;
   }
 }
+
 </style>

@@ -1,3 +1,51 @@
+<template>
+  <div class="dashboard-container">
+    <header class="dashboard-header">
+      <h1>Dashboard</h1>
+      <div class="filter-container">
+        <i class="fas fa-calendar-alt"></i>
+        <select id="year-filter" v-model="selectedYear">
+          <option v-for="year in availableYears" :key="year" :value="year">
+            {{ year }}
+          </option>
+        </select>
+      </div>
+    </header>
+
+    <!-- Summary Cards -->
+    <div class="summary-grid">
+      <div class="summary-card income">
+        <div class="card-header">
+          <i class="fas fa-arrow-up"></i>
+          <span>Total Pemasukan</span>
+        </div>
+        <p class="amount">{{ formatCurrency(totalYearlyIncome) }}</p>
+      </div>
+      <div class="summary-card outcome">
+        <div class="card-header">
+          <i class="fas fa-arrow-down"></i>
+          <span>Total Pengeluaran</span>
+        </div>
+        <p class="amount">{{ formatCurrency(totalYearlyOutcome) }}</p>
+      </div>
+      <div class="summary-card net-flow">
+        <div class="card-header">
+          <i class="fas fa-balance-scale"></i>
+          <span>Arus Kas Bersih</span>
+        </div>
+        <p class="amount">{{ formatCurrency(netYearlyCashFlow) }}</p>
+      </div>
+    </div>
+
+    <div class="chart-wrapper">
+      <h2>Ringkasan Keuangan Bulanan</h2>
+      <div class="chart-container">
+        <BarChart :chart-data="chartData" />
+      </div>
+    </div>
+  </div>
+</template>
+
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import BarChart from '../components/BarChart.vue';
@@ -13,20 +61,15 @@ const availableYears = computed(() => {
   if (transactions.value.length === 0) {
     return [currentYear];
   }
-
-  // Find the earliest year from transactions
   const firstYear = transactions.value.reduce((minYear, t) => {
     const transactionYear = new Date(t.realizationDate || t.plannedDate).getFullYear();
     return transactionYear < minYear ? transactionYear : minYear;
   }, currentYear);
-
-  // Generate a continuous array of years from the first transaction year to the current year
   const years = [];
   for (let year = currentYear; year >= firstYear; year--) {
     years.push(year);
   }
-
-  return years; // Already in descending order
+  return years;
 });
 
 const yearlyTransactions = computed(() => {
@@ -36,99 +79,64 @@ const yearlyTransactions = computed(() => {
   });
 });
 
-const chartData = computed(() => {
-  const monthlyData = {
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-    datasets: [
-      {
-        label: 'Cash In',
-        backgroundColor: '#4ade80', // A vibrant green
-        data: Array(12).fill(0)
-      },
-      {
-        label: 'Cash Out',
-        backgroundColor: '#f87171', // A soft red
-        data: Array(12).fill(0)
-      }
-    ]
-  };
+const chartData = computed(() => ({
+  labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+  datasets: [
+    {
+      label: 'Cash In',
+      backgroundColor: '#00f2fe',
+      borderColor: '#00f2fe',
+      borderWidth: 1,
+      borderRadius: 5,
+      data: Array(12).fill(0).map((_, month) => 
+        yearlyTransactions.value
+          .filter(t => t.type === 'cash-in' && new Date(t.realizationDate || t.plannedDate).getMonth() === month)
+          .reduce((sum, t) => sum + (t.realizationAmount || 0), 0)
+      ),
+    },
+    {
+      label: 'Cash Out',
+      backgroundColor: '#ff79c6',
+      borderColor: '#ff79c6',
+      borderWidth: 1,
+      borderRadius: 5,
+      data: Array(12).fill(0).map((_, month) => 
+        yearlyTransactions.value
+          .filter(t => t.type === 'cash-out' && new Date(t.realizationDate || t.plannedDate).getMonth() === month)
+          .reduce((sum, t) => sum + (t.realizationAmount || 0), 0)
+      ),
+    },
+  ],
+}));
 
-  yearlyTransactions.value.forEach(t => {
-    const date = new Date(t.realizationDate || t.plannedDate);
-    const month = date.getMonth();
-    if (t.type === 'cash-in') {
-      monthlyData.datasets[0].data[month] += t.realizationAmount || 0;
-    } else if (t.type === 'cash-out') {
-      monthlyData.datasets[1].data[month] += t.realizationAmount || 0;
-    }
-  });
-
-  return monthlyData;
-});
-
-const totalYearlyIncome = computed(() => {
-  return yearlyTransactions.value
+const totalYearlyIncome = computed(() => 
+  yearlyTransactions.value
     .filter(t => t.type === 'cash-in' && t.realizationAmount)
-    .reduce((sum, t) => sum + t.realizationAmount, 0);
-});
+    .reduce((sum, t) => sum + t.realizationAmount, 0)
+);
 
-const totalYearlyOutcome = computed(() => {
-  return yearlyTransactions.value
+const totalYearlyOutcome = computed(() => 
+  yearlyTransactions.value
     .filter(t => t.type === 'cash-out' && t.realizationAmount)
-    .reduce((sum, t) => sum + t.realizationAmount, 0);
-});
+    .reduce((sum, t) => sum + t.realizationAmount, 0)
+);
 
 const netYearlyCashFlow = computed(() => totalYearlyIncome.value - totalYearlyOutcome.value);
 
-const formatCurrency = (value) => {
-  return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(value || 0);
-};
+const formatCurrency = (value) => 
+  new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(value || 0);
 
 onMounted(fetchTransactions);
-
 </script>
 
-<template>
-  <div class="dashboard-view-container">
-    <header class="dashboard-header">
-      <h2>Ringkasan Keuangan Tahunan</h2>
-      <div class="filter-container">
-        <label for="year-filter">Pilih Tahun:</label>
-        <select id="year-filter" v-model="selectedYear">
-          <option v-for="year in availableYears" :key="year" :value="year">
-            {{ year }}
-          </option>
-        </select>
-      </div>
-    </header>
-    <div class="chart-container">
-       <BarChart :chart-data="chartData" />
-    </div>
-
-    <!-- Summary Cards -->
-    <div class="summary-cards">
-      <div class="card income">
-        <h3>Total Pemasukan Tahunan</h3>
-        <p>{{ formatCurrency(totalYearlyIncome) }}</p>
-      </div>
-      <div class="card outcome">
-        <h3>Total Pengeluaran Tahunan</h3>
-        <p>{{ formatCurrency(totalYearlyOutcome) }}</p>
-      </div>
-      <div class="card net-flow">
-        <h3>Arus Kas Bersih Tahunan</h3>
-        <p>{{ formatCurrency(netYearlyCashFlow) }}</p>
-      </div>
-    </div>
-  </div>
-</template>
-
 <style scoped>
-.dashboard-view-container {
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css');
+
+.dashboard-container {
   padding: 2rem;
-  background-color: #f9fafb;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  background: linear-gradient(135deg, #1a1a2e 0%, #2a2a4a 100%);
+  color: #e0e0e0;
+  min-height: 100vh;
 }
 
 .dashboard-header {
@@ -140,79 +148,161 @@ onMounted(fetchTransactions);
   gap: 1rem;
 }
 
-.dashboard-header h2 {
+.dashboard-header h1 {
   margin: 0;
-  font-size: 1.8rem;
-  font-weight: 600;
-  color: var(--text-color);
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #fff;
 }
 
 .filter-container {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-}
-
-.filter-container label {
-  font-weight: 500;
-}
-
-.filter-container select {
+  gap: 0.8rem;
+  background: rgba(255, 255, 255, 0.1);
   padding: 0.5rem 1rem;
-  border-radius: 8px;
-  border: 1px solid #d1d5db;
+  border-radius: 10px;
+}
+
+.filter-container i {
+  color: #00f2fe;
+}
+
+#year-filter {
+  background: transparent;
+  border: none;
+  color: #fff;
   font-size: 1rem;
+  font-weight: 500;
   cursor: pointer;
 }
 
-.chart-container {
-  width: 100%;
-  height: 450px; /* Give the chart a fixed height */
+#year-filter:focus {
+  outline: none;
 }
 
-/* Summary Card Styles */
-.summary-cards {
+#year-filter option {
+  background: #2a2a4a;
+  color: #e0e0e0;
+}
+
+.summary-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 20px;
-  margin-top: 30px; /* Space between chart and cards */
+  gap: 1.5rem;
+  margin-bottom: 2rem;
 }
 
-.card {
-  background-color: var(--white-color);
-  padding: 25px;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+.summary-card {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 1.5rem;
+  border-radius: 15px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+.summary-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
 }
 
-.card h3 {
-  margin: 0 0 10px 0;
-  font-size: 1.2rem;
-  font-weight: 500;
-  color: #6b7280;
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  color: #c0c0c0;
 }
 
-.card p {
+.card-header i {
+  font-size: 1.5rem;
+}
+
+.income .card-header i {
+  color: #00f2fe;
+}
+
+.outcome .card-header i {
+  color: #ff79c6;
+}
+
+.net-flow .card-header i {
+  color: #50fa7b;
+}
+
+.amount {
   margin: 0;
-  font-size: 2rem;
+  font-size: 2.2rem;
   font-weight: 700;
+  color: #fff;
 }
 
-.card.income p {
-  color: #10b981;
+.chart-wrapper {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  padding: 2rem;
+  border-radius: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.card.outcome p {
-  color: #ef4444;
+.chart-wrapper h2 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #fff;
 }
 
-.card.net-flow p {
-  color: var(--primary-color);
+.chart-container {
+  height: 400px;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .dashboard-container {
+    padding: 1.5rem;
+  }
+
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .dashboard-header h1 {
+    font-size: 2rem;
+  }
+  
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .amount {
+    font-size: 1.8rem;
+  }
+  
+  .chart-wrapper {
+    padding: 1.5rem;
+  }
+  
+  .chart-container {
+    height: 300px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-container {
+    padding: 1rem;
+  }
+  
+  .dashboard-header h1 {
+    font-size: 1.8rem;
+  }
+
+  .amount {
+    font-size: 1.6rem;
+  }
 }
 </style>

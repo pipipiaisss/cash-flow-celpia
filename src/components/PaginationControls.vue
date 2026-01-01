@@ -42,27 +42,31 @@ const changePage = (newPage) => {
 
 .pagination-button {
   background-color: var(--primary-color);
-  color: white;
+  color: var(--background-dark);
   border: none;
   padding: 8px 16px;
   border-radius: 6px;
   cursor: pointer;
   font-weight: 500;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 15px rgba(0, 242, 254, 0.4);
 }
 
 .pagination-button:hover:not(:disabled) {
-  background-color: var(--primary-dark-color);
+  box-shadow: 0 0 25px rgba(0, 242, 254, 0.7);
+  transform: translateY(-2px);
 }
 
 .pagination-button:disabled {
-  background-color: #d1d5db; /* gray-300 */
+  background-color: rgba(255, 255, 255, 0.1);
   cursor: not-allowed;
   opacity: 0.7;
+  box-shadow: none;
+  transform: none;
 }
 
 .page-info {
-  color: #4b5563; /* gray-600 */
+  color: var(--text-color-light);
   font-weight: 500;
   font-size: 0.95rem;
 }
