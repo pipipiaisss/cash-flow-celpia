@@ -1,39 +1,51 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import TransactionList from '../components/TransactionList.vue';
 import FilterControls from '../components/FilterControls.vue';
+import { useTransactions } from '../composables/useTransactions';
 import { useApi } from '../composables/useApi';
 
-const props = defineProps({
-  transactions: Array,
-  filteredTransactions: Array,
-  selectedMonth: Number,
-  selectedYear: Number,
-  filterDateType: String,
-  isLoading: Boolean
-});
-
-const emit = defineEmits([
-  'update:month',
-  'update:year',
-  'update:filterDateType'
-]);
-
+// --- Menggunakan composable ---
+const { transactions, fetchTransactions } = useTransactions();
 const { deleteTransaction } = useApi();
 
-// --- State untuk Filter Jenis Transaksi ---
+// --- State Lokal untuk filter ---
+const today = new Date();
+const selectedMonth = ref(today.getMonth() + 1);
+const selectedYear = ref(today.getFullYear());
+const filterDateType = ref('realizationDate');
 const transactionTypeFilter = ref('all'); // 'all', 'cash-in', 'cash-out'
+const isLoading = ref(true);
 
+// --- Fungsi untuk memperbarui filter ---
 const setTransactionTypeFilter = (type) => {
   transactionTypeFilter.value = type;
 };
 
-// --- Computed Property untuk memfilter transaksi lebih lanjut ---
+// --- Computed property untuk memfilter transaksi berdasarkan tanggal ---
+const filteredByDate = computed(() => {
+  // Pastikan transaksi diurutkan berdasarkan tanggal, yang terbaru lebih dulu
+  const sorted = transactions.value.slice().sort((a, b) => {
+    const dateA = new Date(a.realizationDate || a.plannedDate);
+    const dateB = new Date(b.realizationDate || b.plannedDate);
+    return dateB - dateA;
+  });
+
+  return sorted.filter(t => {
+    if (!t[filterDateType.value]) return false;
+    const date = new Date(t[filterDateType.value]);
+    const monthMatch = date.getMonth() + 1 === selectedMonth.value;
+    const yearMatch = date.getFullYear() === selectedYear.value;
+    return monthMatch && yearMatch;
+  });
+});
+
+// --- Computed property untuk memfilter lebih lanjut berdasarkan jenis (cash-in/cash-out) ---
 const displayTransactions = computed(() => {
   if (transactionTypeFilter.value === 'all') {
-    return props.filteredTransactions;
+    return filteredByDate.value;
   }
-  return props.filteredTransactions.filter(t => t.type === transactionTypeFilter.value);
+  return filteredByDate.value.filter(t => t.type === transactionTypeFilter.value);
 });
 
 const handleDeleteTransaction = async (id) => {
@@ -41,13 +53,14 @@ const handleDeleteTransaction = async (id) => {
   if (confirmed) {
     try {
       await deleteTransaction(id);
+      await fetchTransactions(); // Muat ulang data setelah penghapusan
     } catch (error) {
       alert("Failed to delete the transaction. Please try again.");
     }
   }
 };
 
-// --- Computed Properties untuk Ringkasan, sekarang berdasarkan displayTransactions ---
+// --- Computed Properties untuk Ringkasan ---
 const totalIncome = computed(() => {
   return displayTransactions.value
     .filter(t => t.type === 'cash-in' && t.realizationAmount)
@@ -65,6 +78,13 @@ const netCashFlow = computed(() => totalIncome.value - totalOutcome.value);
 const formatCurrency = (value) => {
   return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(value);
 };
+
+// --- Muat data saat komponen di-mount ---
+onMounted(async () => {
+  isLoading.value = true;
+  await fetchTransactions();
+  isLoading.value = false;
+});
 
 </script>
 
@@ -88,12 +108,11 @@ const formatCurrency = (value) => {
       :selectedMonth="selectedMonth" 
       :selectedYear="selectedYear" 
       :filterDateType="filterDateType"
-      :transactions="transactions"
-      @update:month="emit('update:month', $event)"
-      @update:year="emit('update:year', $event)"
-      @update:filterDateType="emit('update:filterDateType', $event)"
+      :transactions="transactions" 
+      @update:month="selectedMonth = $event"
+      @update:year="selectedYear = $event"
+      @update:filterDateType="filterDateType = $event"
     />
-    <!-- Tombol Filter Jenis Transaksi -->
     <div class="transaction-type-filter">
       <button @click="setTransactionTypeFilter('all')" :class="{ active: transactionTypeFilter === 'all' }">Semua</button>
       <button @click="setTransactionTypeFilter('cash-in')" :class="{ active: transactionTypeFilter === 'cash-in' }">Pemasukan</button>
@@ -127,12 +146,6 @@ const formatCurrency = (value) => {
   padding: 25px;
   border-radius: 12px;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-}
-
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
 }
 
 .card h3 {
@@ -148,19 +161,10 @@ const formatCurrency = (value) => {
   font-weight: 700;
 }
 
-.card.income p {
-  color: #10b981;
-}
+.card.income p { color: #10b981; }
+.card.outcome p { color: #ef4444; }
+.card.net-flow p { color: var(--primary-color); }
 
-.card.outcome p {
-  color: #ef4444;
-}
-
-.card.net-flow p {
-  color: var(--primary-color);
-}
-
-/* Styling untuk Tombol Filter */
 .transaction-type-filter {
   display: flex;
   justify-content: center;
@@ -170,7 +174,7 @@ const formatCurrency = (value) => {
 
 .transaction-type-filter button {
   padding: 8px 16px;
-  border: 1px solid #d1d5db; /* gray-300 */
+  border: 1px solid #d1d5db;
   background-color: #fff;
   border-radius: 6px;
   cursor: pointer;
@@ -178,9 +182,7 @@ const formatCurrency = (value) => {
   font-weight: 500;
 }
 
-.transaction-type-filter button:hover {
-  background-color: #f3f4f6; /* gray-100 */
-}
+.transaction-type-filter button:hover { background-color: #f3f4f6; }
 
 .transaction-type-filter button.active {
   background-color: var(--primary-color);

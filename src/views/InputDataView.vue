@@ -13,10 +13,11 @@
 import { ref } from 'vue';
 import CashFlowForm from '../components/CashFlowForm.vue';
 import { useApi } from '../composables/useApi';
-
-const emit = defineEmits(['transaction-added']);
+import { useTransactions } from '../composables/useTransactions';
 
 const { addTransaction } = useApi();
+const { fetchTransactions } = useTransactions(); // Get the fetch function
+
 const isSubmitting = ref(false);
 const submitError = ref(null);
 const submitSuccess = ref(false);
@@ -29,9 +30,8 @@ const handleTransactionSubmit = async (transactionData) => {
   try {
     await addTransaction(transactionData);
     submitSuccess.value = true;
-    emit('transaction-added'); // Notify parent (App.vue)
+    await fetchTransactions(); // Refresh the global transaction list
     
-    // Hide success message after 3 seconds
     setTimeout(() => {
       submitSuccess.value = false;
     }, 3000);
@@ -40,7 +40,6 @@ const handleTransactionSubmit = async (transactionData) => {
     console.error("Error submitting transaction:", error);
     submitError.value = error.message || 'Failed to add transaction. Please try again.';
     
-    // Hide error message after 5 seconds
     setTimeout(() => {
       submitError.value = null;
     }, 5000);

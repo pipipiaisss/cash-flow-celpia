@@ -1,25 +1,21 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import BarChart from '../components/BarChart.vue';
+import { useTransactions } from '../composables/useTransactions';
 
-const props = defineProps({
-  transactions: {
-    type: Array,
-    required: true
-  }
-});
+const { transactions, fetchTransactions } = useTransactions();
 
 const currentYear = new Date().getFullYear();
 const selectedYear = ref(currentYear);
 
 const availableYears = computed(() => {
   const currentYear = new Date().getFullYear();
-  if (props.transactions.length === 0) {
+  if (transactions.value.length === 0) {
     return [currentYear];
   }
 
   // Find the earliest year from transactions
-  const firstYear = props.transactions.reduce((minYear, t) => {
+  const firstYear = transactions.value.reduce((minYear, t) => {
     const transactionYear = new Date(t.realizationDate || t.plannedDate).getFullYear();
     return transactionYear < minYear ? transactionYear : minYear;
   }, currentYear);
@@ -34,7 +30,7 @@ const availableYears = computed(() => {
 });
 
 const yearlyTransactions = computed(() => {
-  return props.transactions.filter(t => {
+  return transactions.value.filter(t => {
     const date = new Date(t.realizationDate || t.plannedDate);
     return date.getFullYear() === selectedYear.value;
   });
@@ -87,6 +83,8 @@ const netYearlyCashFlow = computed(() => totalYearlyIncome.value - totalYearlyOu
 const formatCurrency = (value) => {
   return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(value || 0);
 };
+
+onMounted(fetchTransactions);
 
 </script>
 

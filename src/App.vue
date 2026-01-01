@@ -1,78 +1,33 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { computed } from 'vue';
 import { useRouter } from 'vue-router';
-import { useApi } from './composables/useApi';
+import { useAuth } from './composables/useAuth';
 
-const { transactions, fetchTransactions } = useApi();
 const router = useRouter();
+const { isAuthenticated, logout } = useAuth();
 
-const today = new Date();
-const selectedMonth = ref(today.getMonth() + 1);
-const selectedYear = ref(today.getFullYear());
-const filterDateType = ref('realizationDate');
-
-// This function will be called when a new transaction is added
-const handleTransactionAdded = () => {
-  // Refetch all transactions to update the list
-  fetchTransactions();
+const handleLogout = () => {
+  logout();
+  router.push('/login');
 };
 
-const filteredTransactions = computed(() => {
-  // Ensure transactions are sorted by date, most recent first
-  const sorted = transactions.value.slice().sort((a, b) => {
-    const dateA = new Date(a.realizationDate || a.plannedDate);
-    const dateB = new Date(b.realizationDate || b.plannedDate);
-    return dateB - dateA;
-  });
-
-  return sorted.filter(t => {
-    if (!t[filterDateType.value]) return false;
-    const date = new Date(t[filterDateType.value]);
-    const monthMatch = date.getMonth() + 1 === selectedMonth.value;
-    const yearMatch = date.getFullYear() === selectedYear.value;
-    return monthMatch && yearMatch;
-  });
-});
-
-const updateMonth = (month) => {
-  selectedMonth.value = month;
-};
-
-const updateYear = (year) => {
-  selectedYear.value = year;
-};
-
-const updateFilterDateType = (type) => {
-  filterDateType.value = type;
-};
-
-onMounted(fetchTransactions);
 </script>
 
 <template>
   <div id="app">
-    <header class="app-header">
+    <header class="app-header" v-if="isAuthenticated">
       <div class="header-container">
         <h1 class="title">Cash Flow</h1>
         <nav>
           <router-link to="/dashboard" class="nav-button">Dashboard</router-link>
           <router-link to="/report" class="nav-button">Report</router-link>
           <router-link to="/input" class="nav-button">Input Data</router-link>
+          <button @click="handleLogout" class="nav-button logout-button">Logout</button>
         </nav>
       </div>
     </header>
-    <main>
-      <router-view 
-        :transactions="transactions" 
-        :filteredTransactions="filteredTransactions" 
-        :selectedMonth="selectedMonth"
-        :selectedYear="selectedYear"
-        :filterDateType="filterDateType"
-        @update:month="updateMonth"
-        @update:year="updateYear"
-        @update:filterDateType="updateFilterDateType"
-        @transaction-added="handleTransactionAdded"
-      />
+    <main :class="{ 'main-full': !isAuthenticated }">
+      <router-view />
     </main>
   </div>
 </template>
@@ -80,17 +35,16 @@ onMounted(fetchTransactions);
 <style>
 /* Global Styles */
 :root {
-  --primary-color: #4f46e5;
-  --accent-color: #10b981;
-  --background-color: #f3f4f6;
-  --text-color: #1f2937;
+  --primary-color: #007bff;
+  --primary-dark-color: #0056b3;
+  --background-color: #f5f7fa;
+  --text-color: #333;
   --white-color: #ffffff;
-  --primary-dark-color: #4338ca;
 }
 
 body {
   margin: 0;
-  font-family: 'Poppins', sans-serif; /* Using Poppins as primary font */
+  font-family: 'Poppins', sans-serif;
   background-color: var(--background-color);
   color: var(--text-color);
 }
@@ -127,6 +81,7 @@ body {
 
 nav {
   display: flex;
+  align-items: center;
   gap: 15px;
 }
 
@@ -146,7 +101,7 @@ nav {
 .nav-button:hover {
   background-color: var(--primary-dark-color);
   transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
+  box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
 }
 
 .nav-button.router-link-exact-active {
@@ -154,6 +109,17 @@ nav {
   color: var(--primary-color);
   border-color: var(--primary-color);
   font-weight: 600;
+}
+
+.logout-button {
+    background-color: transparent;
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+}
+
+.logout-button:hover {
+    background-color: var(--primary-color);
+    color: var(--white-color);
 }
 
 main {
@@ -165,29 +131,32 @@ main {
   box-sizing: border-box;
 }
 
+main.main-full {
+    max-width: 100%;
+    padding: 0;
+}
 
 /* Input and Button base styles */
 input[type="text"],
+input[type="password"],
 input[type="date"],
 select,
 textarea {
     width: 100%;
-    padding: 10px 14px;
-    border: 1px solid #d1d5db; /* gray-300 */
+    padding: 12px;
+    border: 1px solid #ddd;
     border-radius: 8px;
-    font-size: 1rem;
-    background-color: #f9fafb; /* gray-50 */
-    transition: border-color 0.2s, box-shadow 0.2s;
     box-sizing: border-box;
+    transition: border-color 0.3s;
 }
 
 input[type="text"]:focus,
+input[type="password"]:focus,
 input[type="date"]:focus,
 select:focus,
 textarea:focus {
     outline: none;
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
 }
 
 button {
@@ -206,9 +175,8 @@ button {
 button:hover {
     background-color: var(--primary-dark-color);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
 }
-
 
 /* Mobile adjustments */
 @media (max-width: 768px) {
