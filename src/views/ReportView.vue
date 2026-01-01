@@ -88,6 +88,7 @@ const formatCurrency = (value) => {
       :selectedMonth="selectedMonth" 
       :selectedYear="selectedYear" 
       :filterDateType="filterDateType"
+      :transactions="transactions"
       @update:month="emit('update:month', $event)"
       @update:year="emit('update:year', $event)"
       @update:filterDateType="emit('update:filterDateType', $event)"

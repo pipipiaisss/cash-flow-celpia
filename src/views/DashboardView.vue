@@ -13,11 +13,24 @@ const currentYear = new Date().getFullYear();
 const selectedYear = ref(currentYear);
 
 const availableYears = computed(() => {
+  const currentYear = new Date().getFullYear();
   if (props.transactions.length === 0) {
     return [currentYear];
   }
-  const years = new Set(props.transactions.map(t => new Date(t.realizationDate || t.plannedDate).getFullYear()));
-  return Array.from(years).sort((a, b) => b - a);
+
+  // Find the earliest year from transactions
+  const firstYear = props.transactions.reduce((minYear, t) => {
+    const transactionYear = new Date(t.realizationDate || t.plannedDate).getFullYear();
+    return transactionYear < minYear ? transactionYear : minYear;
+  }, currentYear);
+
+  // Generate a continuous array of years from the first transaction year to the current year
+  const years = [];
+  for (let year = currentYear; year >= firstYear; year--) {
+    years.push(year);
+  }
+
+  return years; // Already in descending order
 });
 
 const yearlyTransactions = computed(() => {

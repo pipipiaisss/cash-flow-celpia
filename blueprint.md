@@ -11,6 +11,8 @@ This document outlines the architecture, features, and development plans for the
 *   **Report View:** Displays paginated transaction lists with filtering capabilities.
 *   **Data Input View:** Provides a form for adding new transactions.
 *   **Currency Formatting:** All monetary values are in Indonesian Rupiah (IDR).
+*   **Dynamic Year Filters:** The year-based filters in both the Dashboard and Report views now dynamically populate a continuous range of years, from the earliest transaction year up to the current year. This ensures that the filter options are always relevant to the available data.
+
 
 ## 3. Design & Styling
 
@@ -37,16 +39,21 @@ This document outlines the architecture, features, and development plans for the
 *   **Status:** **COMPLETED**
 *   **Summary:** Set pagination to 5 items per page.
 
-## 5. Current Task: Add Transaction Type Filter
+## 5. Current Task: Unify Year Filters
 
-*   **Status:** **IN PROGRESS**
-*   **Goal:** Allow users to filter the transaction list on the Report page.
+*   **Status:** **COMPLETED**
+*   **Goal:** Ensure the year filter in the Report view functions identically to the one in the Dashboard view, displaying a dynamic range of years from the first transaction to the current year.
 
 ### 5.1. Plan
 
-1.  **Update `Report.vue`:**
-    *   Add state to manage the currently selected filter ('all', 'cash-in', 'cash-out').
-    *   Add filter buttons to the template.
-    *   Create a `computed` property to filter the transaction list based on the selected filter.
-    *   Update the transaction list rendering to use the new filtered list.
-2.  **Commit & Push:** Save the changes to the repository.
+1.  **Modify `DashboardView.vue`:**
+    *   **Action:** Updated the `availableYears` computed property.
+    *   **Logic:** Instead of just listing unique years from transactions, it now finds the earliest transaction year and generates a continuous sequence of years from that point up to the present. The current year is set as the default selection.
+2.  **Refactor `FilterControls.vue`:**
+    *   **Action:** Abstracted the year filter logic into this reusable component.
+    *   **Props:** Added a new `transactions` prop to receive the complete list of transactions.
+    *   **Logic:** Implemented the same dynamic year generation logic as in the Dashboard, making the component data-driven and reusable.
+3.  **Update `ReportView.vue`:**
+    *   **Action:** Passed the full `transactions` array to the `FilterControls` component.
+    *   **Result:** This allows `FilterControls` to access the necessary data to build the dynamic year filter, aligning its functionality with the Dashboard's filter.
+

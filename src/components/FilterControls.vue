@@ -9,7 +9,7 @@
     <div class="control-group">
       <label for="year">Year:</label>
       <select id="year" :value="selectedYear" @change="emit('update:year', parseInt($event.target.value))">
-        <option v-for="y in yearRange" :key="y" :value="y">{{ y }}</option>
+        <option v-for="y in availableYears" :key="y" :value="y">{{ y }}</option>
       </select>
     </div>
     <div class="control-group">
@@ -34,7 +34,11 @@ import { computed } from 'vue';
 const props = defineProps({
   selectedMonth: Number,
   selectedYear: Number,
-  filterDateType: String
+  filterDateType: String,
+  transactions: {
+    type: Array,
+    required: true
+  }
 });
 
 const emit = defineEmits([
@@ -43,13 +47,25 @@ const emit = defineEmits([
   'update:filterDateType'
 ]);
 
-const yearRange = computed(() => {
+const availableYears = computed(() => {
   const currentYear = new Date().getFullYear();
-  const years = [];
-  for (let i = currentYear - 5; i <= currentYear + 5; i++) {
-    years.push(i);
+  if (props.transactions.length === 0) {
+    return [currentYear];
   }
-  return years;
+
+  // Find the earliest year from transactions
+  const firstYear = props.transactions.reduce((minYear, t) => {
+    const transactionYear = new Date(t.realizationDate || t.plannedDate).getFullYear();
+    return transactionYear < minYear ? transactionYear : minYear;
+  }, currentYear);
+
+  // Generate a continuous array of years from the first transaction year to the current year
+  const years = [];
+  for (let year = currentYear; year >= firstYear; year--) {
+    years.push(year);
+  }
+
+  return years; // Already in descending order
 });
 
 const getMonthName = (monthNumber) => {
