@@ -5,6 +5,7 @@
       <div class="filter-container">
         <i class="fas fa-calendar-alt"></i>
         <select id="year-filter" v-model="selectedYear">
+          <option value="all">All Years</option>
           <option v-for="year in availableYears" :key="year" :value="year">
             {{ year }}
           </option>
@@ -19,26 +20,26 @@
           <i class="fas fa-arrow-up"></i>
           <span>Total Pemasukan</span>
         </div>
-        <p class="amount">{{ formatCurrency(totalYearlyIncome) }}</p>
+        <p class="amount">{{ formatCurrency(totalIncome) }}</p>
       </div>
       <div class="summary-card outcome">
         <div class="card-header">
           <i class="fas fa-arrow-down"></i>
           <span>Total Pengeluaran</span>
         </div>
-        <p class="amount">{{ formatCurrency(totalYearlyOutcome) }}</p>
+        <p class="amount">{{ formatCurrency(totalOutcome) }}</p>
       </div>
       <div class="summary-card net-flow">
         <div class="card-header">
           <i class="fas fa-balance-scale"></i>
           <span>Arus Kas Bersih</span>
         </div>
-        <p class="amount">{{ formatCurrency(netYearlyCashFlow) }}</p>
+        <p class="amount">{{ formatCurrency(netCashFlow) }}</p>
       </div>
     </div>
 
     <div class="chart-wrapper">
-      <h2>Ringkasan Keuangan Bulanan</h2>
+      <h2>{{ chartTitle }}</h2>
       <div class="chart-container">
         <BarChart :chart-data="chartData" />
       </div>
@@ -53,75 +54,113 @@ import { useTransactions } from '../composables/useTransactions';
 
 const { transactions, fetchTransactions } = useTransactions();
 
-const currentYear = new Date().getFullYear();
-const selectedYear = ref(currentYear);
+const selectedYear = ref(new Date().getFullYear());
 
 const availableYears = computed(() => {
-  const currentYear = new Date().getFullYear();
   if (transactions.value.length === 0) {
-    return [currentYear];
+    return [new Date().getFullYear()];
   }
-  const firstYear = transactions.value.reduce((minYear, t) => {
-    const transactionYear = new Date(t.realizationDate || t.plannedDate).getFullYear();
-    return transactionYear < minYear ? transactionYear : minYear;
-  }, currentYear);
-  const years = [];
-  for (let year = currentYear; year >= firstYear; year--) {
-    years.push(year);
-  }
-  return years;
+  const years = new Set(transactions.value.map(t => new Date(t.realizationDate || t.plannedDate).getFullYear()));
+  return Array.from(years).sort((a, b) => b - a);
 });
 
-const yearlyTransactions = computed(() => {
+const chartTitle = computed(() => 
+  selectedYear.value === 'all' 
+    ? 'Ringkasan Keuangan Tahunan' 
+    : `Ringkasan Keuangan Bulanan ${selectedYear.value}`
+);
+
+const yearlyGroupedTransactions = computed(() => {
+  const grouped = {};
+  transactions.value.forEach(t => {
+    const year = new Date(t.realizationDate || t.plannedDate).getFullYear();
+    if (!grouped[year]) {
+      grouped[year] = [];
+    }
+    grouped[year].push(t);
+  });
+  return grouped;
+});
+
+const chartData = computed(() => {
+  let labels, cashIn, cashOut;
+
+  if (selectedYear.value === 'all') {
+    labels = availableYears.value.slice().reverse(); 
+    cashIn = labels.map(year => 
+      (yearlyGroupedTransactions.value[year] || [])
+        .filter(t => t.type === 'cash-in' && t.realizationAmount)
+        .reduce((sum, t) => sum + t.realizationAmount, 0)
+    );
+    cashOut = labels.map(year => 
+      (yearlyGroupedTransactions.value[year] || [])
+        .filter(t => t.type === 'cash-out' && t.realizationAmount)
+        .reduce((sum, t) => sum + t.realizationAmount, 0)
+    );
+  } else {
+    const year = parseInt(selectedYear.value);
+    labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const monthlyTx = (yearlyGroupedTransactions.value[year] || []);
+    cashIn = Array(12).fill(0).map((_, month) => 
+      monthlyTx
+        .filter(t => t.type === 'cash-in' && new Date(t.realizationDate || t.plannedDate).getMonth() === month)
+        .reduce((sum, t) => sum + (t.realizationAmount || 0), 0)
+    );
+    cashOut = Array(12).fill(0).map((_, month) => 
+      monthlyTx
+        .filter(t => t.type === 'cash-out' && new Date(t.realizationDate || t.plannedDate).getMonth() === month)
+        .reduce((sum, t) => sum + (t.realizationAmount || 0), 0)
+    );
+  }
+
+  return {
+    labels,
+    datasets: [
+      {
+        label: 'Cash In',
+        backgroundColor: '#00f2fe',
+        borderColor: '#00f2fe',
+        borderWidth: 1,
+        borderRadius: 5,
+        data: cashIn,
+      },
+      {
+        label: 'Cash Out',
+        backgroundColor: '#ff79c6',
+        borderColor: '#ff79c6',
+        borderWidth: 1,
+        borderRadius: 5,
+        data: cashOut,
+      },
+    ],
+  };
+});
+
+const filteredTransactions = computed(() => {
+  if (selectedYear.value === 'all') {
+    return transactions.value;
+  }
+  const year = parseInt(selectedYear.value, 10);
   return transactions.value.filter(t => {
-    const date = new Date(t.realizationDate || t.plannedDate);
-    return date.getFullYear() === selectedYear.value;
+    const transactionDate = t.realizationDate || t.plannedDate;
+    return new Date(transactionDate).getFullYear() === year;
   });
 });
 
-const chartData = computed(() => ({
-  labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-  datasets: [
-    {
-      label: 'Cash In',
-      backgroundColor: '#00f2fe',
-      borderColor: '#00f2fe',
-      borderWidth: 1,
-      borderRadius: 5,
-      data: Array(12).fill(0).map((_, month) => 
-        yearlyTransactions.value
-          .filter(t => t.type === 'cash-in' && new Date(t.realizationDate || t.plannedDate).getMonth() === month)
-          .reduce((sum, t) => sum + (t.realizationAmount || 0), 0)
-      ),
-    },
-    {
-      label: 'Cash Out',
-      backgroundColor: '#ff79c6',
-      borderColor: '#ff79c6',
-      borderWidth: 1,
-      borderRadius: 5,
-      data: Array(12).fill(0).map((_, month) => 
-        yearlyTransactions.value
-          .filter(t => t.type === 'cash-out' && new Date(t.realizationDate || t.plannedDate).getMonth() === month)
-          .reduce((sum, t) => sum + (t.realizationAmount || 0), 0)
-      ),
-    },
-  ],
-}));
 
-const totalYearlyIncome = computed(() => 
-  yearlyTransactions.value
+const totalIncome = computed(() => 
+  filteredTransactions.value
     .filter(t => t.type === 'cash-in' && t.realizationAmount)
     .reduce((sum, t) => sum + t.realizationAmount, 0)
 );
 
-const totalYearlyOutcome = computed(() => 
-  yearlyTransactions.value
+const totalOutcome = computed(() => 
+  filteredTransactions.value
     .filter(t => t.type === 'cash-out' && t.realizationAmount)
     .reduce((sum, t) => sum + t.realizationAmount, 0)
 );
 
-const netYearlyCashFlow = computed(() => totalYearlyIncome.value - totalYearlyOutcome.value);
+const netCashFlow = computed(() => totalIncome.value - totalOutcome.value);
 
 const formatCurrency = (value) => 
   new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(value || 0);

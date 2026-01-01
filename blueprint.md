@@ -8,7 +8,10 @@ This document outlines the architecture, features, and development plans for the
 
 *   **User Authentication:** A secure login page requires users to authenticate with a username and password (`cafein`/`pass1234`) before accessing the application.
 *   **Backend Integration:** Connects to `https://cash-flow-rouge.vercel.app/cashflows` for all CRUD operations.
-*   **Dashboard View:** Visualizes monthly cash flow summaries with a bar chart, filterable by year.
+*   **Dashboard View:** Visualizes monthly cash flow summaries with a bar chart. 
+    *   **Default View:** Defaults to showing the current year's monthly breakdown.
+    *   **Filterable by Year:** Allows users to select a specific year to view its monthly data.
+    *   **"All Years" Summary:** An option to view a summary of total cash in vs. cash out for all available years.
 *   **Report View:** Displays paginated transaction lists with filtering capabilities.
 *   **Data Input View:** Provides a form for adding new transactions with automated logic.
 *   **Currency Formatting:** All monetary values are in Indonesian Rupiah (IDR).
@@ -56,9 +59,15 @@ This document outlines the architecture, features, and development plans for the
 
 ### 4.11. Improve Dropdown Readability
 *   **Status:** **COMPLETED**
-*   **Goal:** To improve the readability of dropdown options across the application.
+
+### 4.12. Implement Yearly Summary on Dashboard
+*   **Status:** **COMPLETED**
+*   **Goal:** To add a feature allowing users to view a summary of cash flow for all years and set the default view to the current year.
 *   **Changes:**
-    *   **Consistent Styling:** Applied a consistent dark theme to dropdown options in `DashboardView.vue`, `FilterControls.vue`, and `CashFlowForm.vue`, ensuring the background and text colors are legible and align with the application's overall design.
+    *   Added an "All Years" option to the year filter on the Dashboard.
+    *   When "All Years" is selected, the chart displays a comparison of total cash in and cash out for each year with available data.
+    *   The summary cards (Total Income, Total Outcome, Net Cash Flow) now reflect the data for the selected filter (either a specific year or all years).
+    *   **Set the default filter to the current year**, providing a more immediate and relevant view for the user upon loading the page.
 
 ## 5. Next Steps
 *   Awaiting user feedback.
