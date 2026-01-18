@@ -1,7 +1,7 @@
 import { ref } from 'vue';
 import axios from 'axios';
 
-const API_URL = 'https://cash-flow-rouge.vercel.app/cashflows';
+const API_URL = 'https://cash-flow-celpia-be.vercel.app/cashflows';
 
 const backendToFrontendMapping = {
   '_id': 'id',
