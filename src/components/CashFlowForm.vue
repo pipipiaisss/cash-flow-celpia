@@ -163,11 +163,11 @@ watch(() => props.submitSuccess, (newVal) => {
 
 <style scoped>
 form {
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: rgba(255, 255, 255, 0.7);
   padding: 30px;
   border-radius: 12px;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(236, 72, 153, 0.2);
   backdrop-filter: blur(10px);
   display: flex;
   flex-direction: column;
@@ -176,11 +176,11 @@ form {
 
 h3 {
   text-align: center;
-  color: var(--white-color);
+  color: var(--primary-color);
   margin-bottom: 0;
   font-weight: 600;
   font-size: 1.8rem;
-  text-shadow: 0 0 10px rgba(0, 242, 254, 0.5);
+  text-shadow: 0 0 10px rgba(236, 72, 153, 0.3);
 }
 
 .form-grid {
@@ -201,7 +201,7 @@ h3 {
 
 label {
   font-weight: 500;
-  color: var(--text-color-light);
+  color: var(--text-color-dark);
 }
 
 input[type="text"],
@@ -211,27 +211,27 @@ textarea {
   box-sizing: border-box;
   width: 100%;
   padding: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background-color: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background-color: rgba(255, 255, 255, 0.5);
   border-radius: 6px;
   font-size: 1rem;
-  color: var(--text-color-light);
+  color: var(--text-color-dark);
   transition: all 0.2s ease;
 }
 
 select option {
-  background: var(--background-dark);
-  color: var(--text-color-light);
+  background: var(--white-color);
+  color: var(--text-color-dark);
 }
 
 input::placeholder, textarea::placeholder {
-    color: rgba(224, 224, 224, 0.5);
+    color: rgba(0, 0, 0, 0.4);
 }
 
 input:focus, select:focus, textarea:focus {
   outline: none;
   border-color: var(--primary-color);
-  box-shadow: 0 0 10px rgba(0, 242, 254, 0.4);
+  box-shadow: 0 0 10px rgba(236, 72, 153, 0.2);
 }
 
 textarea {
@@ -248,7 +248,7 @@ textarea {
   align-items: center;
   gap: 12px;
   cursor: pointer;
-  color: var(--text-color-light);
+  color: var(--text-color-dark);
 }
 
 .checkbox-label input[type="checkbox"] {
@@ -258,7 +258,7 @@ textarea {
 .checkbox-custom {
   width: 20px;
   height: 20px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  border: 2px solid rgba(0, 0, 0, 0.2);
   border-radius: 4px;
   display: inline-block;
   position: relative;
@@ -277,7 +277,7 @@ textarea {
   top: 2px;
   width: 5px;
   height: 10px;
-  border: solid var(--background-dark);
+  border: solid var(--white-color);
   border-width: 0 3px 3px 0;
   transform: rotate(45deg);
   opacity: 0;
@@ -295,16 +295,16 @@ button {
   border: none;
   border-radius: 8px;
   background-color: var(--primary-color);
-  color: var(--background-dark);
+  color: var(--white-color);
   font-size: 1.1rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 0 15px rgba(0, 242, 254, 0.4);
+  box-shadow: 0 0 15px rgba(236, 72, 153, 0.4);
 }
 
 button:hover:not(:disabled) {
-  box-shadow: 0 0 25px rgba(0, 242, 254, 0.7);
+  box-shadow: 0 0 25px rgba(236, 72, 153, 0.7);
   transform: translateY(-2px);
 }
 
@@ -329,18 +329,18 @@ button:disabled {
 }
 
 .loading-message {
-  background-color: rgba(0, 242, 254, 0.1);
+  background-color: rgba(236, 72, 153, 0.1);
   color: var(--primary-color);
 }
 
 .error-message {
-  background-color: rgba(255, 121, 198, 0.1);
-  color: var(--secondary-color);
+  background-color: rgba(255, 0, 0, 0.1);
+  color: #DC2626;
 }
 
 .success-message {
-  background-color: rgba(49, 232, 159, 0.1);
-  color: #31e89f;
+  background-color: rgba(5, 150, 105, 0.1);
+  color: #059669;
 }
 
 .fade-enter-active, .fade-leave-active {

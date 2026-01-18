@@ -135,19 +135,18 @@ onMounted(async () => {
 }
 
 .card {
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: rgba(255, 255, 255, 0.7);
   padding: 1.5rem;
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(236, 72, 153, 0.2);
 }
 
 .card h3 {
   margin: 0 0 10px 0;
   font-size: 1.1rem;
   font-weight: 500;
-  color: var(--text-color-light);
+  color: var(--text-color-dark);
 }
 
 .card p {
@@ -156,9 +155,9 @@ onMounted(async () => {
   font-weight: 700;
 }
 
-.card.income p { color: #31e89f; }
-.card.outcome p { color: #ff79c6; }
-.card.net-flow p { color: var(--primary-color); }
+.card.income p { color: #059669; } /* A darker green */
+.card.outcome p { color: var(--primary-color); }
+.card.net-flow p { color: #3b82f6; } /* A contrasting blue */
 
 .transaction-type-filter {
   display: flex;
@@ -170,9 +169,9 @@ onMounted(async () => {
 
 .transaction-type-filter button {
   padding: 8px 16px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   background-color: transparent;
-  color: var(--text-color-light);
+  color: var(--text-color-dark);
   border-radius: 6px;
   cursor: pointer;
   transition: background-color 0.2s, color 0.2s;
@@ -180,12 +179,12 @@ onMounted(async () => {
 }
 
 .transaction-type-filter button:hover { 
-  background-color: rgba(255, 255, 255, 0.1); 
+  background-color: rgba(0, 0, 0, 0.05); 
 }
 
 .transaction-type-filter button.active {
   background-color: var(--primary-color);
-  color: var(--background-dark);
+  color: var(--white-color);
   border-color: var(--primary-color);
 }
 

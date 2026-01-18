@@ -79,11 +79,11 @@ const getMonthName = (monthNumber) => {
   flex-wrap: wrap;
   gap: 20px;
   padding: 20px;
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: rgba(255, 255, 255, 0.7);
   border-radius: 12px;
   margin-bottom: 30px;
   align-items: flex-end;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(236, 72, 153, 0.2);
   backdrop-filter: blur(10px);
 }
 
@@ -95,27 +95,27 @@ const getMonthName = (monthNumber) => {
 .control-group label {
   margin-bottom: 8px;
   font-weight: 500;
-  color: var(--text-color-light);
+  color: var(--text-color-dark);
 }
 
 .control-group select {
   padding: 10px;
   border-radius: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background-color: rgba(0, 0, 0, 0.2);
-  color: var(--text-color-light);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background-color: rgba(255, 255, 255, 0.5);
+  color: var(--text-color-dark);
   font-size: 1rem;
 }
 
 .control-group select option {
-  background: var(--background-dark);
-  color: var(--text-color-light);
+  background: var(--white-color);
+  color: var(--text-color-dark);
 }
 
 .radio-group {
   display: flex;
   gap: 10px;
-  background-color: rgba(0, 0, 0, 0.2);
+  background-color: rgba(0, 0, 0, 0.1);
   padding: 5px;
   border-radius: 8px;
 }
@@ -130,6 +130,7 @@ const getMonthName = (monthNumber) => {
     border-radius: 6px;
     transition: background-color 0.3s, color 0.3s;
     display: block;
+    color: var(--text-color-dark);
 }
 
 .radio-group input {
@@ -138,7 +139,7 @@ const getMonthName = (monthNumber) => {
 
 .radio-group input:checked + span {
   background-color: var(--primary-color);
-  color: var(--background-dark);
+  color: var(--white-color);
   font-weight: 500;
 }
 </style>

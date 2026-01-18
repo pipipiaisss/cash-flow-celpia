@@ -118,16 +118,16 @@ const chartData = computed(() => {
     datasets: [
       {
         label: 'Cash In',
-        backgroundColor: '#00f2fe',
-        borderColor: '#00f2fe',
+        backgroundColor: '#22c55e',
+        borderColor: '#22c55e',
         borderWidth: 1,
         borderRadius: 5,
         data: cashIn,
       },
       {
         label: 'Cash Out',
-        backgroundColor: '#ff79c6',
-        borderColor: '#ff79c6',
+        backgroundColor: '#EC4899',
+        borderColor: '#EC4899',
         borderWidth: 1,
         borderRadius: 5,
         data: cashOut,
@@ -146,7 +146,6 @@ const filteredTransactions = computed(() => {
     return new Date(transactionDate).getFullYear() === year;
   });
 });
-
 
 const totalIncome = computed(() => 
   filteredTransactions.value
@@ -173,9 +172,7 @@ onMounted(fetchTransactions);
 
 .dashboard-container {
   padding: 2rem;
-  background: linear-gradient(135deg, #1a1a2e 0%, #2a2a4a 100%);
-  color: #e0e0e0;
-  min-height: 100vh;
+  color: var(--text-color-dark);
 }
 
 .dashboard-header {
@@ -191,26 +188,26 @@ onMounted(fetchTransactions);
   margin: 0;
   font-size: 2.5rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--primary-color);
 }
 
 .filter-container {
   display: flex;
   align-items: center;
   gap: 0.8rem;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.5);
   padding: 0.5rem 1rem;
   border-radius: 10px;
 }
 
 .filter-container i {
-  color: #00f2fe;
+  color: var(--primary-color);
 }
 
 #year-filter {
   background: transparent;
   border: none;
-  color: #fff;
+  color: var(--text-color-dark);
   font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
@@ -221,8 +218,8 @@ onMounted(fetchTransactions);
 }
 
 #year-filter option {
-  background: var(--background-dark);
-  color: var(--text-color-light);
+  background: var(--white-color);
+  color: var(--text-color-dark);
 }
 
 .summary-grid {
@@ -233,9 +230,9 @@ onMounted(fetchTransactions);
 }
 
 .summary-card {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(236, 72, 153, 0.3);
   padding: 1.5rem;
   border-radius: 15px;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -243,7 +240,7 @@ onMounted(fetchTransactions);
 
 .summary-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
 .card-header {
@@ -252,7 +249,7 @@ onMounted(fetchTransactions);
   gap: 0.8rem;
   margin-bottom: 1rem;
   font-size: 1.1rem;
-  color: #c0c0c0;
+  color: var(--text-color-dark);
 }
 
 .card-header i {
@@ -260,30 +257,30 @@ onMounted(fetchTransactions);
 }
 
 .income .card-header i {
-  color: #00f2fe;
+  color: #22c55e;
 }
 
 .outcome .card-header i {
-  color: #ff79c6;
+  color: var(--primary-color);
 }
 
 .net-flow .card-header i {
-  color: #50fa7b;
+  color: #3b82f6;
 }
 
 .amount {
   margin: 0;
   font-size: 2.2rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--text-color-dark);
 }
 
 .chart-wrapper {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(10px);
   padding: 2rem;
   border-radius: 15px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(236, 72, 153, 0.3);
 }
 
 .chart-wrapper h2 {
@@ -292,7 +289,7 @@ onMounted(fetchTransactions);
   text-align: center;
   font-size: 1.5rem;
   font-weight: 600;
-  color: #fff;
+  color: var(--primary-color);
 }
 
 .chart-container {

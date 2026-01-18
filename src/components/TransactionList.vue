@@ -128,18 +128,17 @@ const getRemainingClass = (transaction) => {
 
 <style scoped>
 .transaction-list-container {
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: rgba(255, 255, 255, 0.7);
   padding: 25px;
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(236, 72, 153, 0.2);
 }
 
 h3 {
   margin-top: 0;
   margin-bottom: 20px;
-  color: var(--white-color);
+  color: var(--primary-color);
   font-weight: 600;
 }
 
@@ -155,7 +154,7 @@ h3 {
   justify-content: space-between;
   align-items: center;
   padding: 15px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .transaction-content {
@@ -175,13 +174,13 @@ h3 {
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--text-color-light);
+    color: var(--primary-color);
     transition: all 0.2s ease-in-out;
 }
 
 .delete-btn:hover {
-    background-color: rgba(255, 121, 198, 0.2);
-    color: #ff79c6;
+    background-color: rgba(236, 72, 153, 0.1);
+    color: var(--primary-color);
 }
 
 .delete-btn:disabled {
@@ -207,12 +206,12 @@ h3 {
 .name {
   font-weight: 600;
   font-size: 1.1rem;
-  color: var(--white-color);
+  color: var(--text-color-dark);
 }
 
 .description {
   font-size: 0.9rem;
-  color: var(--text-color-light);
+  color: #6B7280;
   margin-top: 2px;
 }
 
@@ -230,11 +229,11 @@ h3 {
 }
 
 .amount.income {
-  color: #31e89f;
+  color: #059669;
 }
 
 .amount.outcome {
-  color: #ff79c6;
+  color: var(--primary-color);
 }
 
 .remaining {
@@ -244,24 +243,24 @@ h3 {
 }
 
 .remaining.surplus {
-  color: #31e89f;
+  color: #059669;
 }
 
 .remaining.deficit {
-  color: #ff79c6;
+  color: var(--primary-color);
 }
 
 .remaining.neutral {
-  color: var(--text-color-light);
+  color: var(--text-color-dark);
 }
 
 .sub-info {
   margin-top: 8px;
   font-size: 0.9rem;
-  color: var(--text-color-light);
+  color: var(--text-color-dark);
   display: flex;
   justify-content: space-between;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
   padding-top: 8px;
   flex-wrap: wrap;
 }
@@ -275,7 +274,7 @@ h3 {
 .info-group .label {
   font-weight: 500;
   font-size: 0.85rem;
-  color: var(--text-color-light);
+  color: #6B7280;
 }
 
 .info-group .value {
@@ -283,12 +282,12 @@ h3 {
 }
 
 .info-group .separator {
-  color: rgba(255, 255, 255, 0.2);
+  color: rgba(0, 0, 0, 0.2);
 }
 
 .no-transactions {
   text-align: center;
   padding: 40px;
-  color: var(--text-color-light);
+  color: var(--text-color-dark);
 }
 </style>
