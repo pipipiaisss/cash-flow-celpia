@@ -118,6 +118,10 @@ onMounted(async () => {
 
 <template>
   <div class="report-container">
+    <header class="view-header">
+      <h1>Laporan Keuangan</h1>
+      <p>Analisis terperinci tentang pemasukan dan pengeluaran Anda.</p>
+    </header>
     <div class="summary-cards">
       <div class="card income">
         <h3>Pemasukan</h3>
@@ -155,11 +159,28 @@ onMounted(async () => {
 
 <style scoped>
 .report-container {
-  width: 100%;
   max-width: 1200px;
-  margin: 0 auto;
+  margin: 2rem auto;
   padding: 2rem;
   box-sizing: border-box;
+}
+
+.view-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.view-header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  margin: 0;
+}
+
+.view-header p {
+  font-size: 1.1rem;
+  color: var(--text-color-light);
+  margin-top: 0.5rem;
 }
 
 .summary-cards {
@@ -170,12 +191,19 @@ onMounted(async () => {
 }
 
 .card {
-  background-color: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(236, 72, 153, 0.3);
   padding: 1.5rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(236, 72, 153, 0.2);
+  border-radius: 15px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(236, 72, 153, 0.2);
+}
+
 
 .card h3 {
   margin: 0 0 10px 0;
@@ -190,43 +218,50 @@ onMounted(async () => {
   font-weight: 700;
 }
 
-.card.income p { color: #059669; } /* A darker green */
+.card.income p { color: #22c55e; }
 .card.outcome p { color: var(--primary-color); }
-.card.net-flow p { color: #3b82f6; } /* A contrasting blue */
+.card.net-flow p { color: #3b82f6; }
 
 .transaction-type-filter {
   display: flex;
   justify-content: center;
-  gap: 10px;
-  margin-bottom: 1.5rem;
+  gap: 1rem;
+  margin-bottom: 2rem;
   flex-wrap: wrap;
 }
 
 .transaction-type-filter button {
-  padding: 8px 16px;
+  padding: 10px 20px;
   border: 1px solid rgba(0, 0, 0, 0.1);
-  background-color: transparent;
+  background-color: #fff;
   color: var(--text-color-dark);
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.2s, color 0.2s;
+  transition: all 0.3s ease;
   font-weight: 500;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
 .transaction-type-filter button:hover { 
-  background-color: rgba(0, 0, 0, 0.05); 
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
 .transaction-type-filter button.active {
   background-color: var(--primary-color);
   color: var(--white-color);
   border-color: var(--primary-color);
+  box-shadow: 0 5px 15px rgba(236, 72, 153, 0.4);
 }
 
 /* Responsive Styles */
 @media (max-width: 768px) {
   .report-container {
     padding: 1rem;
+  }
+
+  .view-header h1 {
+    font-size: 2rem;
   }
 
   .summary-cards {
@@ -252,8 +287,8 @@ onMounted(async () => {
   }
 
   .transaction-type-filter button {
-    font-size: 0.8rem;
-    padding: 6px 12px;
+    font-size: 0.9rem;
+    padding: 8px 15px;
   }
 }
 </style>

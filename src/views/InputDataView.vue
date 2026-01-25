@@ -1,5 +1,9 @@
 <template>
   <div class="input-view-container">
+    <header class="view-header">
+      <h1>Input Transaksi Baru</h1>
+      <p>Tambahkan pemasukan atau pengeluaran ke dalam catatan keuangan Anda.</p>
+    </header>
     <CashFlowForm 
       @add-transaction="handleTransactionSubmit" 
       :is-submitting="isSubmitting"
@@ -51,16 +55,39 @@ const handleTransactionSubmit = async (transactionData) => {
 
 <style scoped>
 .input-view-container {
-  width: 100%;
   max-width: 800px;
   margin: 2rem auto;
-  padding: 0 1rem; /* Adjusted for mobile */
+  padding: 2rem;
   box-sizing: border-box;
 }
+
+.view-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.view-header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  margin: 0;
+}
+
+.view-header p {
+  font-size: 1.1rem;
+  color: var(--text-color-light);
+  margin-top: 0.5rem;
+}
+
 
 @media (max-width: 768px) {
   .input-view-container {
     margin: 1rem auto;
+    padding: 1.5rem;
+  }
+
+  .view-header h1 {
+    font-size: 2rem;
   }
 }
 </style>

@@ -65,7 +65,7 @@ const handleLogin = async () => {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--primary-color) 0%, #a855f7 100%);
   font-family: 'Poppins', sans-serif;
   color: #fff;
   position: relative;
@@ -173,7 +173,7 @@ const handleLogin = async () => {
 .input-group input:focus {
   outline: none;
   background: rgba(0, 0, 0, 0.3);
-  box-shadow: 0 0 15px rgba(102, 126, 234, 0.5);
+  box-shadow: 0 0 15px rgba(236, 72, 153, 0.5);
 }
 
 .input-group input:focus ~ i {
@@ -192,7 +192,7 @@ const handleLogin = async () => {
 .login-button {
   width: 100%;
   padding: 15px;
-  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+  background: linear-gradient(135deg, #a855f7 0%, var(--primary-color) 100%);
   color: #fff;
   border: none;
   border-radius: 10px;
@@ -213,7 +213,7 @@ const handleLogin = async () => {
 }
 
 .login-button:hover {
-  box-shadow: 0 0 20px rgba(102, 126, 234, 0.8);
+  box-shadow: 0 0 20px rgba(236, 72, 153, 0.8);
   transform: translateY(-2px);
 }
 
@@ -248,6 +248,6 @@ const handleLogin = async () => {
 }
 
 .login-footer a:hover {
-  color: #764ba2;
+  color: var(--primary-color);
 }
 </style>

@@ -246,17 +246,17 @@ const getRemainingClass = (transaction) => {
 
 <style scoped>
 .transaction-list-container {
-  background-color: rgba(255, 255, 255, 0.7);
   padding: 25px;
+  background-color: rgba(255, 255, 255, 0.7);
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   border: 1px solid rgba(236, 72, 153, 0.2);
+  backdrop-filter: blur(10px);
 }
 
 h3 {
   margin-top: 0;
   margin-bottom: 20px;
-  color: var(--primary-color);
+  color: var(--text-color-dark);
   font-weight: 600;
 }
 
@@ -272,18 +272,26 @@ h3 {
   justify-content: space-between;
   align-items: center;
   padding: 15px 0;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+
+.transaction-item:last-child {
+  border-bottom: none;
 }
 
 .transaction-content {
     flex-grow: 1;
+    overflow: hidden;
+    margin-right: 10px;
 }
 
 .actions {
+    display: flex;
+    gap: 8px;
     margin-left: 20px;
 }
 
-.delete-btn {
+.edit-btn, .delete-btn {
     background: none;
     border: 1px solid transparent;
     border-radius: 50%;
@@ -292,22 +300,19 @@ h3 {
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--primary-color);
+    color: var(--text-color-dark);
     transition: all 0.2s ease-in-out;
 }
 
-.delete-btn:hover {
+.edit-btn:hover, .delete-btn:hover {
     background-color: rgba(236, 72, 153, 0.1);
     color: var(--primary-color);
 }
 
+
 .delete-btn:disabled {
     cursor: not-allowed;
     opacity: 0.5;
-}
-
-.transaction-item:last-child {
-  border-bottom: none;
 }
 
 .main-info {
@@ -319,6 +324,8 @@ h3 {
 .name-description {
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+  word-wrap: break-word;
 }
 
 .name {
@@ -378,7 +385,7 @@ h3 {
   color: var(--text-color-dark);
   display: flex;
   justify-content: space-between;
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  border-top: 1px solid rgba(0,0,0,0.1);
   padding-top: 8px;
   flex-wrap: wrap;
 }
@@ -400,12 +407,169 @@ h3 {
 }
 
 .info-group .separator {
-  color: rgba(0, 0, 0, 0.2);
+  color: rgba(0,0,0,0.2);
 }
 
 .no-transactions {
   text-align: center;
   padding: 40px;
   color: var(--text-color-dark);
+}
+
+/* === EDIT FORM STYLES === */
+.transaction-edit-form {
+    width: 100%;
+    padding: 25px;
+    background-color: rgba(255, 255, 255, 0.7);
+    border-radius: 12px;
+    margin: -15px 0;
+}
+
+.transaction-edit-form form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto;
+    gap: 20px;
+    grid-template-areas:
+        "name type"
+        "description description"
+        "planned-amount planned-date"
+        "realization-amount realization-date"
+        "confirmed actions";
+}
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+}
+
+.area-name { grid-area: name; }
+.area-type { grid-area: type; }
+.area-description { grid-area: description; }
+.area-planned-amount { grid-area: planned-amount; }
+.area-planned-date { grid-area: planned-date; }
+.area-realization-amount { grid-area: realization-amount; }
+.area-realization-date { grid-area: realization-date; }
+.area-confirmed { grid-area: confirmed; }
+.area-actions { grid-area: actions; }
+
+.form-field label {
+    font-size: 0.9rem;
+    color: var(--text-color-dark);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.input-wrapper {
+    position: relative;
+}
+
+.input-wrapper .icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--primary-color);
+    width: 16px;
+    height: 16px;
+}
+
+.form-input, .form-select, .form-textarea, .form-field :deep(.form-input) {
+    width: 100%;
+    padding: 12px 12px 12px 40px;
+    background: #fff;
+    border: 1px solid #D1D5DB;
+    border-radius: 8px;
+    color: var(--text-color-dark);
+    font-family: 'Poppins', sans-serif;
+    transition: all 0.2s ease-in-out;
+    box-sizing: border-box;
+}
+
+.form-input:focus, .form-select:focus, .form-textarea:focus, .form-field :deep(.form-input:focus) {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 10px rgba(236, 72, 153, 0.3);
+}
+
+.form-textarea { resize: vertical; min-height: 80px; }
+
+.form-field-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    align-self: center;
+}
+
+#edit-confirmed {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--primary-color);
+}
+
+.form-field-checkbox label {
+    margin-bottom: 0;
+    color: var(--text-color-dark);
+    cursor: pointer;
+}
+
+.form-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.form-actions button {
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s ease-in-out;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.save-btn {
+    background: var(--primary-color);
+    color: #fff;
+    border: none;
+    box-shadow: 0 0 15px rgba(236, 72, 153, 0.4);
+}
+
+.save-btn svg { width: 16px; height: 16px; }
+
+.save-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(236, 72, 153, 0.6);
+}
+
+.cancel-btn {
+    background-color: transparent;
+    border: 1px solid var(--text-color-dark);
+    color: var(--text-color-dark);
+}
+
+.cancel-btn:hover {
+    background-color: rgba(0,0,0,0.05);
+}
+
+@media (max-width: 768px) {
+  .transaction-edit-form form {
+    grid-template-columns: 1fr;
+    gap: 15px;
+    grid-template-areas:
+      "name" "type" "description" "planned-amount" "planned-date" "realization-amount" "realization-date" "confirmed" "actions";
+  }
+  .form-actions { justify-content: space-between; }
+  .form-actions button { width: 48%; justify-content: center; padding: 12px; }
+  .transaction-item { flex-direction: column; align-items: stretch; }
+  .main-info, .sub-info { flex-direction: column; align-items: stretch; }
+  .realization-info { align-items: flex-start; margin-left: 0; margin-top: 8px; }
+  .actions { margin-left: 0; margin-top: 15px; justify-content: flex-end; }
+  .sub-info { gap: 8px; }
+  .info-group .separator { display: none; }
 }
 </style>

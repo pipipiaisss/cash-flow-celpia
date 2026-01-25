@@ -240,7 +240,7 @@ onMounted(fetchTransactions);
 
 .summary-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 20px rgba(236, 72, 153, 0.2);
 }
 
 .card-header {
