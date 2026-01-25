@@ -6,13 +6,14 @@ import { useTransactions } from '../composables/useTransactions';
 import { useApi } from '../composables/useApi';
 
 const { transactions, fetchTransactions } = useTransactions();
-const { deleteTransaction } = useApi();
+const { deleteTransaction, updateTransaction } = useApi();
 
 const today = new Date();
-const selectedMonth = ref(today.getMonth() + 1);
-const selectedYear = ref(today.getFullYear());
+const selectedMonth = ref(today.getMonth() + 1); // Default to current month
+const selectedYear = ref(today.getFullYear());  // Default to current year
 const filterDateType = ref('realizationDate');
 const transactionTypeFilter = ref('all');
+const searchQuery = ref('');
 const isLoading = ref(true);
 
 const setTransactionTypeFilter = (type) => {
@@ -27,19 +28,37 @@ const filteredByDate = computed(() => {
   });
 
   return sorted.filter(t => {
-    if (!t[filterDateType.value]) return false;
-    const date = new Date(t[filterDateType.value]);
-    const monthMatch = date.getMonth() + 1 === selectedMonth.value;
-    const yearMatch = date.getFullYear() === selectedYear.value;
+    const dateValue = t[filterDateType.value];
+    if (!dateValue) return false;
+    
+    const date = new Date(dateValue);
+    if (isNaN(date.getTime())) return false; // Skip invalid dates
+
+    const monthMatch = selectedMonth.value === 0 || (date.getMonth() + 1 === selectedMonth.value);
+    const yearMatch = selectedYear.value === 0 || (date.getFullYear() === selectedYear.value);
+
     return monthMatch && yearMatch;
   });
 });
 
 const displayTransactions = computed(() => {
-  if (transactionTypeFilter.value === 'all') {
-    return filteredByDate.value;
+  let filtered = filteredByDate.value;
+
+  // Filter by transaction type (Cash In/Cash Out)
+  if (transactionTypeFilter.value !== 'all') {
+    filtered = filtered.filter(t => t.type === transactionTypeFilter.value);
   }
-  return filteredByDate.value.filter(t => t.type === transactionTypeFilter.value);
+
+  // Filter by search query
+  if (searchQuery.value) {
+    const lowerCaseQuery = searchQuery.value.toLowerCase();
+    filtered = filtered.filter(t => 
+      (t.name && t.name.toLowerCase().includes(lowerCaseQuery)) ||
+      (t.description && t.description.toLowerCase().includes(lowerCaseQuery))
+    );
+  }
+
+  return filtered;
 });
 
 const handleDeleteTransaction = async (id) => {
@@ -47,11 +66,28 @@ const handleDeleteTransaction = async (id) => {
   if (confirmed) {
     try {
       await deleteTransaction(id);
-      await fetchTransactions();
+      await fetchTransactions(); 
     } catch (error) {
+      console.error("Failed to delete the transaction:", error);
       alert("Failed to delete the transaction. Please try again.");
+      if (error.response) {
+        console.error('Backend Error Response:', error.response.data);
+      }
     }
   }
+};
+
+const handleUpdateTransaction = async (id, data) => {
+    try {
+        await updateTransaction(id, data);
+        await fetchTransactions();
+    } catch (error) {
+        console.error('Failed to update transaction:', error);
+        alert('Failed to update transaction. Please try again.');
+        if (error.response) {
+            console.error('Backend Update Error:', error.response.data);
+        }
+    }
 };
 
 const totalIncome = computed(() => {
@@ -69,7 +105,7 @@ const totalOutcome = computed(() => {
 const netCashFlow = computed(() => totalIncome.value - totalOutcome.value);
 
 const formatCurrency = (value) => {
-  return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(value);
+  return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(value);
 };
 
 onMounted(async () => {
@@ -97,13 +133,11 @@ onMounted(async () => {
       </div>
     </div>
     <FilterControls 
-      :selectedMonth="selectedMonth" 
-      :selectedYear="selectedYear" 
-      :filterDateType="filterDateType"
-      :transactions="transactions" 
-      @update:month="selectedMonth = $event"
-      @update:year="selectedYear = $event"
-      @update:filterDateType="filterDateType = $event"
+      v-model:searchQuery="searchQuery"
+      v-model:selectedMonth="selectedMonth" 
+      v-model:selectedYear="selectedYear" 
+      v-model:filterDateType="filterDateType"
+      :transactions="transactions"
     />
     <div class="transaction-type-filter">
       <button @click="setTransactionTypeFilter('all')" :class="{ active: transactionTypeFilter === 'all' }">Semua</button>
@@ -114,6 +148,7 @@ onMounted(async () => {
         :transactions="displayTransactions" 
         :is-loading="isLoading" 
         @delete-transaction="handleDeleteTransaction" 
+        @update-transaction="handleUpdateTransaction"
     />
   </div>
 </template>

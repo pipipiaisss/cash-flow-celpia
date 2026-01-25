@@ -8,7 +8,7 @@
       <form @submit.prevent="handleLogin">
         <div class="input-group">
           <i class="fas fa-user"></i>
-          <input type="text" v-model="username" placeholder="Username" required>
+          <input type="text" v-model="identifier" placeholder="Username or Email" required>
         </div>
         <div class="input-group">
           <i class="fas fa-lock"></i>
@@ -17,8 +17,9 @@
         <div v-if="error" class="error-message">
           <p>{{ error }}</p>
         </div>
-        <button type="submit" class="login-button">
-          <span>Login</span>
+        <button type="submit" class="login-button" :disabled="isLoading">
+          <span v-if="!isLoading">Login</span>
+          <span v-else>Loading...</span>
           <i class="fas fa-arrow-right"></i>
         </button>
       </form>
@@ -31,19 +32,23 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuth } from '../composables/useAuth';
 
-const username = ref('');
+const identifier = ref('');
 const password = ref('');
 const error = ref(null);
+const isLoading = ref(false);
 
 const router = useRouter();
 const { login } = useAuth();
 
-const handleLogin = () => {
-  const success = login(username.value, password.value);
+const handleLogin = async () => {
+  isLoading.value = true;
+  error.value = null;
+  const success = await login(identifier.value, password.value);
+  isLoading.value = false;
   if (success) {
     router.push('/');
   } else {
-    error.value = 'Invalid username or password. Please try again.';
+    error.value = 'Invalid identifier or password. Please try again.';
     setTimeout(() => {
       error.value = null;
     }, 3000);
@@ -200,6 +205,11 @@ const handleLogin = () => {
   align-items: center;
   position: relative;
   overflow: hidden;
+}
+
+.login-button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
 }
 
 .login-button:hover {

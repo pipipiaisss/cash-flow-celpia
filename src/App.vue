@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuth } from './composables/useAuth';
+import Notification from './components/Notification.vue'; // Re-imported
 
 const router = useRouter();
 const { isAuthenticated, logout } = useAuth();
@@ -24,23 +25,28 @@ const handleLogout = () => {
 
 <template>
   <div id="app">
-    <header class="app-header" v-if="isAuthenticated">
-      <div class="header-container">
-        <h1 class="title">Cash Flow</h1>
-        <button @click="toggleMenu" class="menu-toggle">
-          <i :class="isMenuOpen ? 'fas fa-times' : 'fas fa-bars'"></i>
-        </button>
-        <nav :class="{ 'nav-open': isMenuOpen }">
-          <router-link to="/dashboard" @click="closeMenu" class="nav-button">Dashboard</router-link>
-          <router-link to="/report" @click="closeMenu" class="nav-button">Report</router-link>
-          <router-link to="/input" @click="closeMenu" class="nav-button">Input Data</router-link>
-          <button @click="handleLogout" class="nav-button logout-button">Logout</button>
-        </nav>
-      </div>
-    </header>
-    <main>
-      <router-view />
-    </main>
+    <!-- Notification is now a sibling to the main layout, ensuring it's not affected by flexbox -->
+    <Notification />
+
+    <div class="main-layout">
+      <header class="app-header" v-if="isAuthenticated">
+        <div class="header-container">
+          <h1 class="title">Cash Flow</h1>
+          <button @click="toggleMenu" class="menu-toggle">
+            <i :class="isMenuOpen ? 'fas fa-times' : 'fas fa-bars'"></i>
+          </button>
+          <nav :class="{ 'nav-open': isMenuOpen }">
+            <router-link to="/dashboard" @click="closeMenu" class="nav-button">Dashboard</router-link>
+            <router-link to="/report" @click="closeMenu" class="nav-button">Report</router-link>
+            <router-link to="/input" @click="closeMenu" class="nav-button">Input Data</router-link>
+            <button @click="handleLogout" class="nav-button logout-button">Logout</button>
+          </nav>
+        </div>
+      </header>
+      <main>
+        <router-view />
+      </main>
+    </div>
   </div>
 </template>
 

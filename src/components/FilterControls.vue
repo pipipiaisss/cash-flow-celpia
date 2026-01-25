@@ -1,14 +1,29 @@
 <template>
   <div class="filter-controls">
+    <div class="control-group search-group">
+      <label for="search">Search:</label>
+      <div class="input-wrapper">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="search-icon"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <input 
+          type="text"
+          id="search"
+          :value="searchQuery"
+          @input="emit('update:searchQuery', $event.target.value)"
+          placeholder="Cari nama atau deskripsi..."
+        />
+      </div>
+    </div>
     <div class="control-group">
       <label for="month">Month:</label>
-      <select id="month" :value="selectedMonth" @change="emit('update:month', parseInt($event.target.value))">
+      <select id="month" :value="selectedMonth" @change="emit('update:selectedMonth', parseInt($event.target.value))">
+        <option value="0">Semua Bulan</option>
         <option v-for="m in 12" :key="m" :value="m">{{ getMonthName(m) }}</option>
       </select>
     </div>
     <div class="control-group">
       <label for="year">Year:</label>
-      <select id="year" :value="selectedYear" @change="emit('update:year', parseInt($event.target.value))">
+      <select id="year" :value="selectedYear" @change="emit('update:selectedYear', parseInt($event.target.value))">
+        <option value="0">Semua Tahun</option>
         <option v-for="y in availableYears" :key="y" :value="y">{{ y }}</option>
       </select>
     </div>
@@ -35,6 +50,7 @@ const props = defineProps({
   selectedMonth: Number,
   selectedYear: Number,
   filterDateType: String,
+  searchQuery: String,
   transactions: {
     type: Array,
     required: true
@@ -42,28 +58,28 @@ const props = defineProps({
 });
 
 const emit = defineEmits([
-  'update:month',
-  'update:year',
-  'update:filterDateType'
+  'update:selectedMonth',
+  'update:selectedYear',
+  'update:filterDateType',
+  'update:searchQuery'
 ]);
 
 const availableYears = computed(() => {
-  const currentYear = new Date().getFullYear();
   if (props.transactions.length === 0) {
-    return [currentYear];
+    return [new Date().getFullYear()];
   }
 
-  const firstYear = props.transactions.reduce((minYear, t) => {
-    const transactionYear = new Date(t.realizationDate || t.plannedDate).getFullYear();
-    return transactionYear < minYear ? transactionYear : minYear;
-  }, currentYear);
+  const transactionYears = props.transactions.map(t => new Date(t.realizationDate || t.plannedDate).getFullYear());
+  const uniqueYears = [...new Set(transactionYears)].filter(y => !isNaN(y));
+  const firstYear = Math.min(...uniqueYears);
+  const currentYear = new Date().getFullYear();
 
   const years = [];
   for (let year = currentYear; year >= firstYear; year--) {
     years.push(year);
   }
 
-  return years;
+  return years.length > 0 ? years : [currentYear];
 });
 
 const getMonthName = (monthNumber) => {
@@ -98,13 +114,48 @@ const getMonthName = (monthNumber) => {
   color: var(--text-color-dark);
 }
 
-.control-group select {
+.search-group {
+    flex-grow: 1;
+    min-width: 250px;
+}
+
+.input-wrapper {
+    position: relative;
+}
+
+.search-icon {
+    position: absolute;
+    top: 50%;
+    left: 12px;
+    transform: translateY(-50%);
+    color: #9CA3AF; /* A slightly muted gray */
+    pointer-events: none; /* Make sure the icon doesn't block clicks on the input */
+}
+
+.control-group input[type="text"] {
+    padding-left: 40px !important; 
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.control-group input[type="text"]:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.2);
+    outline: none;
+}
+
+.control-group input[type="text"]:focus + .search-icon {
+    color: var(--primary-color);
+}
+
+.control-group select, .control-group input[type="text"] {
+  width: 100%;
   padding: 10px;
   border-radius: 6px;
   border: 1px solid rgba(0, 0, 0, 0.1);
   background-color: rgba(255, 255, 255, 0.5);
   color: var(--text-color-dark);
   font-size: 1rem;
+  box-sizing: border-box; 
 }
 
 .control-group select option {
@@ -126,7 +177,7 @@ const getMonthName = (monthNumber) => {
 }
 
 .radio-group span {
-    padding: 8px 12px;
+    padding: 10px 12px;
     border-radius: 6px;
     transition: background-color 0.3s, color 0.3s;
     display: block;
@@ -141,5 +192,11 @@ const getMonthName = (monthNumber) => {
   background-color: var(--primary-color);
   color: var(--white-color);
   font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .search-group {
+    min-width: 100%;
+  }
 }
 </style>
